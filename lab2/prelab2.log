@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10) (preloaded format=pdflatex 2023.11.19)  13 NOV 2025 21:12
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (MiKTeX 23.10) (preloaded format=pdflatex 2023.11.19)  14 NOV 2025 01:54
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1109,6 +1109,10 @@ LaTeX Font Info:    Font shape `T1/minntx/m/n' will be
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/bera\beramono.sty
 Package: beramono 2004/01/31 (WaS)
 )
+(C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/newunicodechar\newunico
+dechar.sty
+Package: newunicodechar 2018/04/08 v1.2 Defining Unicode characters
+)
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.sty
 File: lstlang1.sty 2023/02/27 1.9 listings language file
 )
@@ -1180,70 +1184,65 @@ Package cleveref Info: include cross-reference names in hyperlinks on input lin
 e 7852.
 Package cleveref Info: no abbreviation of names on input line 7852.
 )
-(C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/newunicodechar\newunico
-dechar.sty
-Package: newunicodechar 2018/04/08 v1.2 Defining Unicode characters
-)
 Package translations Info: No language package found. I am going to use `englis
-h' as default language. on input line 138.
+h' as default language. on input line 141.
 LaTeX Font Info:    Trying to load font information for T1+ntxtlf on input line
- 138.
-
+ 141.
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/newtx\t1ntxtlf.fd
 File: t1ntxtlf.fd 2021/05/24 v1.1 font definition file for T1/ntx/tlf
 )
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 12.0pt on input line 138.
+(Font)              scaled to size 12.0pt on input line 141.
 
 (prelab2.aux)
 \openout1 = `prelab2.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 138.
+LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 141.
 LaTeX Font Info:    Trying to load font information for OML+ntxmi on input line
- 138.
+ 141.
 
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/newtx\omlntxmi.fd
 File: omlntxmi.fd 2015/08/25 Fontinst v1.933 font definitions for OML/ntxmi.
 )
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 141.
 LaTeX Font Info:    Trying to load font information for U+ntxexa on input line 
-138.
+141.
 
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/newtx\untxexa.fd
 File: untxexa.fd 2012/04/16 Fontinst v1.933 font definitions for U/ntxexa.
 )
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 138.
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 141.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 141.
 LaTeX Font Info:    Trying to load font information for LMS+ntxsy on input line
- 138.
+ 141.
 
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/newtx\lmsntxsy.fd
 File: lmsntxsy.fd 2016/07/02 Fontinst v1.933 font definitions for LMS/ntxsy.
 )
-LaTeX Font Info:    ... okay on input line 138.
-LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 138.
+LaTeX Font Info:    ... okay on input line 141.
+LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 141.
 LaTeX Font Info:    Trying to load font information for LMX+ntxexx on input lin
-e 138.
+e 141.
 
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/newtx\lmxntxexx.fd
 File: lmxntxexx.fd 2016/07/03 Fontinst v1.933 font definitions for LMX/ntxexx.
 )
-LaTeX Font Info:    ... okay on input line 138.
+LaTeX Font Info:    ... okay on input line 141.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -1298,8 +1297,16 @@ ii
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-b
 ase.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+
+(C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/grfext\grfext.sty
+Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
+)
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 504.
 
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/00miktex\epstopdf-sys.c
 fg
@@ -1311,10 +1318,10 @@ File: translations-basic-dictionary-english.trsl (english translation file `tra
 nslations-basic-dictionary')
 )
 Package translations Info: loading dictionary `translations-basic-dictionary' f
-or `english'. on input line 138.
-LaTeX Info: Command `\dddot' is already robust on input line 138.
-LaTeX Info: Command `\ddddot' is already robust on input line 138.
-Package hyperref Info: Link coloring OFF on input line 138.
+or `english'. on input line 141.
+LaTeX Info: Command `\dddot' is already robust on input line 141.
+LaTeX Info: Command `\ddddot' is already robust on input line 141.
+Package hyperref Info: Link coloring OFF on input line 141.
  (prelab2.out) (prelab2.out)
 \@outlinefile=\write4
 \openout4 = `prelab2.out'.
@@ -1328,13 +1335,13 @@ Package: inputenc 2021/02/14 v1.3d Input encoding file
 )
 \c@mv@tabular=\count370
 \c@mv@boldtabular=\count371
-LaTeX Info: Redefining \microtypecontext on input line 138.
-Package microtype Info: Applying patch `item' on input line 138.
-Package microtype Info: Applying patch `toc' on input line 138.
-Package microtype Info: Applying patch `eqnum' on input line 138.
-Package microtype Info: Applying patch `footnote' on input line 138.
-Package microtype Info: Applying patch `verbatim' on input line 138.
-LaTeX Info: Redefining \microtypesetup on input line 138.
+LaTeX Info: Redefining \microtypecontext on input line 141.
+Package microtype Info: Applying patch `item' on input line 141.
+Package microtype Info: Applying patch `toc' on input line 141.
+Package microtype Info: Applying patch `eqnum' on input line 141.
+Package microtype Info: Applying patch `footnote' on input line 141.
+Package microtype Info: Applying patch `verbatim' on input line 141.
+LaTeX Info: Redefining \microtypesetup on input line 141.
 Package microtype Info: Generating PDF output.
 Package microtype Info: Character protrusion enabled (level 2).
 Package microtype Info: Using default protrusion set `alltext'.
@@ -1352,25 +1359,25 @@ File: mt-ptm.cfg 2006/04/20 v1.7 microtype config. file: Times (RS)
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 LaTeX Font Info:    Trying to load font information for T1+qhv on input line 14
-0.
+3.
 
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/tex-gyre\t1qhv.fd
 File: t1qhv.fd 2009/09/25 v1.2 font definition file for T1/qhv
 )
 LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
-(Font)              scaled to size 11.28003pt on input line 140.
+(Font)              scaled to size 11.28003pt on input line 143.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `qhv' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
-(Font)              scaled to size 16.24324pt on input line 140.
+(Font)              scaled to size 16.24324pt on input line 143.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 24.88pt on input line 140.
+(Font)              scaled to size 24.88pt on input line 143.
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 24.88pt on input line 140.
+(Font)              scaled to size 24.88pt on input line 143.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 14.4pt on input line 140.
+(Font)              scaled to size 14.4pt on input line 143.
 
 [1
 
@@ -1378,9 +1385,9 @@ LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
 g/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/tex-gyre/q-ec.enc}{C:/Users/gya
 ng/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/newtx/ntx-ec-tlf.enc}]
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 17.28pt on input line 145.
+(Font)              scaled to size 17.28pt on input line 148.
 LaTeX Font Info:    Font shape `T1/qhv/b/n' will be
-(Font)              scaled to size 16.24324pt on input line 145.
+(Font)              scaled to size 16.24324pt on input line 148.
 
 (prelab2.toc
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
@@ -1474,9 +1481,9 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 8.8pt on input line 13.
+(Font)              scaled to size 8.8pt on input line 18.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 6.6pt on input line 13.
+(Font)              scaled to size 6.6pt on input line 18.
 )
 \tf@toc=\write5
 \openout5 = `prelab2.toc'.
@@ -1499,247 +1506,287 @@ sers/gyang/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/newtx/ntx-ot1-tlf.enc}
  [3
 
 ]
-LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
-(Font)              scaled to size 13.53603pt on input line 167.
-LaTeX Font Info:    Font shape `T1/qhv/b/n' will be
-(Font)              scaled to size 13.53603pt on input line 167.
-LaTeX Font Info:    Font shape `T1/fvm/b/n' will be
-(Font)              scaled to size 12.24008pt on input line 192.
-
-
-LaTeX Font Warning: Command \small invalid in math mode on input line 195.
-
+<figures/system_analyzed.png, id=214, 1303.87125pt x 350.81062pt>
+File: figures/system_analyzed.png Graphic file (type png)
+<use figures/system_analyzed.png>
+Package pdftex.def Info: figures/system_analyzed.png  used on input line 166.
+(pdftex.def)             Requested size: 328.82707pt x 88.47325pt.
 LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 10.95pt on input line 195.
-LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 9.30756pt on input line 196.
-LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
-(Font)              scaled to size 10.95pt on input line 196.
-LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
-(Font)              scaled to size 8.0pt on input line 196.
-LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
-(Font)              scaled to size 6.1pt on input line 196.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 10.95pt on input line 196.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 8.0pt on input line 196.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 6.1pt on input line 196.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 10.95pt on input line 196.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 8.0pt on input line 196.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 6.1pt on input line 196.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 10.95pt on input line 196.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 8.0pt on input line 196.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 6.1pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 10.95pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 8.0pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 6.1pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 10.95pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 8.0pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 6.1pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 10.95pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 8.0pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 6.1pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 10.95pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 8.0pt on input line 196.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 6.1pt on input line 196.
-[1
-
-]
-<figures/step_compare.png, id=188, 433.62pt x 289.08pt>
-File: figures/step_compare.png Graphic file (type png)
-<use figures/step_compare.png>
-Package pdftex.def Info: figures/step_compare.png  used on input line 231.
-(pdftex.def)             Requested size: 328.82707pt x 219.22668pt.
+(Font)              scaled to size 10.95pt on input line 167.
 LaTeX Font Info:    Font shape `T1/ntxtlf/b/n' will be
-(Font)              scaled to size 10.95pt on input line 232.
-LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
-(Font)              scaled to size 14.4pt on input line 237.
-LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
-(Font)              scaled to size 10.5pt on input line 237.
-LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
-(Font)              scaled to size 7.9pt on input line 237.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 14.4pt on input line 237.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 10.5pt on input line 237.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 7.9pt on input line 237.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 14.4pt on input line 237.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 10.5pt on input line 237.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 7.9pt on input line 237.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 14.4pt on input line 237.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 10.5pt on input line 237.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 7.9pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 14.4pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 10.5pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 7.9pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 14.4pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 10.5pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 7.9pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 14.4pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 10.5pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 7.9pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 14.4pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 10.5pt on input line 237.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 7.9pt on input line 237.
+(Font)              scaled to size 10.95pt on input line 167.
 
 
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 237.
+LaTeX Warning: Citation `project_handout' on page 1 undefined on input line 175
+.
 
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 237.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 237.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 237.
-
-<figures/root_locus_continuous.png, id=191, 455.301pt x 433.62pt>
-File: figures/root_locus_continuous.png Graphic file (type png)
-<use figures/root_locus_continuous.png>
-Package pdftex.def Info: figures/root_locus_continuous.png  used on input line 
-242.
-(pdftex.def)             Requested size: 211.38832pt x 201.32024pt.
-<figures/root_locus_discrete.png, id=192, 455.301pt x 433.62pt>
-File: figures/root_locus_discrete.png Graphic file (type png)
-<use figures/root_locus_discrete.png>
-Package pdftex.def Info: figures/root_locus_discrete.png  used on input line 24
-3.
-(pdftex.def)             Requested size: 211.38832pt x 201.32024pt.
-LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 8.0pt on input line 244.
-LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
-(Font)              scaled to size 6.1pt on input line 244.
-[2 <./figures/step_compare.png>]
-<figures/bode_compare.png, id=204, 469.755pt x 433.62pt>
-File: figures/bode_compare.png Graphic file (type png)
-<use figures/bode_compare.png>
-Package pdftex.def Info: figures/bode_compare.png  used on input line 253.
-(pdftex.def)             Requested size: 352.31625pt x 325.2142pt.
- [3 <./figures/root_locus_continuous.png> <./figures/root_locus_discrete.png>]
-<figures/bode_sampling.png, id=213, 469.755pt x 325.215pt>
-File: figures/bode_sampling.png Graphic file (type png)
-<use figures/bode_sampling.png>
-Package pdftex.def Info: figures/bode_sampling.png  used on input line 279.
-(pdftex.def)             Requested size: 328.82707pt x 227.64894pt.
- [4 <./figures/bode_compare.png>]
-<figures/pcontroller_nonlinear_effects.png, id=220, 448.074pt x 433.62pt>
-File: figures/pcontroller_nonlinear_effects.png Graphic file (type png)
-<use figures/pcontroller_nonlinear_effects.png>
-Package pdftex.def Info: figures/pcontroller_nonlinear_effects.png  used on inp
-ut line 298.
-(pdftex.def)             Requested size: 399.29463pt x 386.41682pt.
- [5 <./figures/bode_sampling.png>]
-LaTeX Font Info:    Font shape `T1/qhv/b/n' will be
-(Font)              scaled to size 9.87003pt on input line 304.
-LaTeX Font Info:    Font shape `T1/qhv/b/n' will be
-(Font)              scaled to size 7.42601pt on input line 304.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 304.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\omega' on input line 304.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 304.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 304.
-
-<figures/lrr_lead.png, id=228, 448.074pt x 433.62pt>
-File: figures/lrr_lead.png Graphic file (type png)
-<use figures/lrr_lead.png>
-Package pdftex.def Info: figures/lrr_lead.png  used on input line 319.
-(pdftex.def)             Requested size: 352.31625pt x 340.95485pt.
-[6 <./figures/pcontroller_nonlinear_effects.png>]
-<figures/lead_integral_tracking.png, id=237, 462.528pt x 433.62pt>
-File: figures/lead_integral_tracking.png Graphic file (type png)
-<use figures/lead_integral_tracking.png>
-Package pdftex.def Info: figures/lead_integral_tracking.png  used on input line
- 343.
-(pdftex.def)             Requested size: 375.80544pt x 352.33524pt.
- [7 <./figures/lrr_lead.png>]
-[8 <./figures/lead_integral_tracking.png>]
 LaTeX Font Info:    Trying to load font information for TS1+ntxtlf on input lin
-e 365.
-
+e 181.
 (C:\Users\gyang\AppData\Local\Programs\MiKTeX\tex/latex/newtx\ts1ntxtlf.fd
 File: ts1ntxtlf.fd 2015/01/18 v1.0 fd file for TS1/ntxtlf
 )
 LaTeX Font Info:    Font shape `TS1/ntxtlf/m/n' will be
-(Font)              scaled to size 12.0pt on input line 365.
-<figures/bode_summary.png, id=253, 469.755pt x 433.62pt>
+(Font)              scaled to size 12.0pt on input line 181.
+LaTeX Font Info:    Font shape `T1/qhv/m/n' will be
+(Font)              scaled to size 13.53603pt on input line 186.
+LaTeX Font Info:    Font shape `T1/qhv/b/n' will be
+(Font)              scaled to size 13.53603pt on input line 186.
+
+[1
+
+{C:/Users/gyang/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/tex-gyre/q-ts1.en
+c} <./figures/system_analyzed.png>]
+LaTeX Font Info:    Font shape `T1/fvm/b/n' will be
+(Font)              scaled to size 12.24008pt on input line 211.
+<figures/c2d.png, id=229, 149.8097pt x 74.52844pt>
+File: figures/c2d.png Graphic file (type png)
+<use figures/c2d.png>
+Package pdftex.def Info: figures/c2d.png  used on input line 217.
+(pdftex.def)             Requested size: 328.82707pt x 163.61732pt.
+ [2 <./figures/c2d.png>] [3]
+<figures/step_compare.png, id=258, 433.62pt x 289.08pt>
+File: figures/step_compare.png Graphic file (type png)
+<use figures/step_compare.png>
+Package pdftex.def Info: figures/step_compare.png  used on input line 299.
+(pdftex.def)             Requested size: 328.82707pt x 219.22668pt.
+<figures/bode_model_compare.png, id=260, 469.755pt x 397.485pt>
+File: figures/bode_model_compare.png Graphic file (type png)
+<use figures/bode_model_compare.png>
+Package pdftex.def Info: figures/bode_model_compare.png  used on input line 308
+.
+(pdftex.def)             Requested size: 366.40834pt x 310.03705pt.
+LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
+(Font)              scaled to size 10.95pt on input line 309.
+LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
+(Font)              scaled to size 8.0pt on input line 309.
+LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
+(Font)              scaled to size 6.1pt on input line 309.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 10.95pt on input line 309.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 8.0pt on input line 309.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 6.1pt on input line 309.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 10.95pt on input line 309.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 8.0pt on input line 309.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 6.1pt on input line 309.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 10.95pt on input line 309.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 8.0pt on input line 309.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 6.1pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 10.95pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 8.0pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 6.1pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 10.95pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 8.0pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 6.1pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 10.95pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 8.0pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 6.1pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 10.95pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 8.0pt on input line 309.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 6.1pt on input line 309.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 8.0pt on input line 309.
+LaTeX Font Info:    Font shape `T1/ntxtlf/m/n' will be
+(Font)              scaled to size 6.1pt on input line 309.
+ [4 <./figures/step_compare.png>]
+LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
+(Font)              scaled to size 14.4pt on input line 323.
+LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
+(Font)              scaled to size 10.5pt on input line 323.
+LaTeX Font Info:    Font shape `OT1/minntx/m/n' will be
+(Font)              scaled to size 7.9pt on input line 323.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 14.4pt on input line 323.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 10.5pt on input line 323.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 7.9pt on input line 323.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 14.4pt on input line 323.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 10.5pt on input line 323.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 7.9pt on input line 323.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 14.4pt on input line 323.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 10.5pt on input line 323.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 7.9pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 14.4pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 10.5pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 7.9pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 14.4pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 10.5pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 7.9pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 14.4pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 10.5pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 7.9pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 14.4pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 10.5pt on input line 323.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 7.9pt on input line 323.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 323.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 323.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 323.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 323.
+
+[5 <./figures/bode_model_compare.png>]
+<figures/root_locus_continuous.png, id=278, 455.301pt x 433.62pt>
+File: figures/root_locus_continuous.png Graphic file (type png)
+<use figures/root_locus_continuous.png>
+Package pdftex.def Info: figures/root_locus_continuous.png  used on input line 
+337.
+(pdftex.def)             Requested size: 211.38832pt x 201.32024pt.
+<figures/root_locus_discrete.png, id=279, 455.301pt x 433.62pt>
+File: figures/root_locus_discrete.png Graphic file (type png)
+<use figures/root_locus_discrete.png>
+Package pdftex.def Info: figures/root_locus_discrete.png  used on input line 33
+8.
+(pdftex.def)             Requested size: 211.38832pt x 201.32024pt.
+<figures/bode_compare.png, id=283, 469.755pt x 433.62pt>
+File: figures/bode_compare.png Graphic file (type png)
+<use figures/bode_compare.png>
+Package pdftex.def Info: figures/bode_compare.png  used on input line 355.
+(pdftex.def)             Requested size: 352.31625pt x 325.2142pt.
+ [6 <./figures/root_locus_continuous.png> <./figures/root_locus_discrete.png>]
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 9.30756pt on input line 362.
+ [7 <./figures/bode_compare.png>]
+<figures/bode_sampling.png, id=296, 469.755pt x 325.215pt>
+File: figures/bode_sampling.png Graphic file (type png)
+<use figures/bode_sampling.png>
+Package pdftex.def Info: figures/bode_sampling.png  used on input line 394.
+(pdftex.def)             Requested size: 328.82707pt x 227.64894pt.
+ [8 <./figures/bode_sampling.png>]
+<figures/pcontroller_bode.png, id=305, 455.301pt x 397.485pt>
+File: figures/pcontroller_bode.png Graphic file (type png)
+<use figures/pcontroller_bode.png>
+Package pdftex.def Info: figures/pcontroller_bode.png  used on input line 424.
+(pdftex.def)             Requested size: 366.40834pt x 319.89287pt.
+ [9]
+<figures/simulink_P_control.png, id=315, 1231.60126pt x 338.76563pt>
+File: figures/simulink_P_control.png Graphic file (type png)
+<use figures/simulink_P_control.png>
+Package pdftex.def Info: figures/simulink_P_control.png  used on input line 434
+.
+(pdftex.def)             Requested size: 366.40834pt x 100.78273pt.
+ [10 <./figures/pcontroller_bode.png> <./figures/simulink_P_control.png>]
+<figures/pcontroller_friction_steps.png, id=324, 448.074pt x 289.08pt>
+File: figures/pcontroller_friction_steps.png Graphic file (type png)
+<use figures/pcontroller_friction_steps.png>
+Package pdftex.def Info: figures/pcontroller_friction_steps.png  used on input 
+line 461.
+(pdftex.def)             Requested size: 366.40834pt x 236.3943pt.
+ [11 <./figures/pcontroller_friction_steps.png>]
+<figures/pcontroller_saturation_steps.png, id=333, 448.074pt x 289.08pt>
+File: figures/pcontroller_saturation_steps.png Graphic file (type png)
+<use figures/pcontroller_saturation_steps.png>
+Package pdftex.def Info: figures/pcontroller_saturation_steps.png  used on inpu
+t line 488.
+(pdftex.def)             Requested size: 366.40834pt x 236.3943pt.
+LaTeX Font Info:    Font shape `T1/qhv/b/n' will be
+(Font)              scaled to size 9.87003pt on input line 503.
+LaTeX Font Info:    Font shape `T1/qhv/b/n' will be
+(Font)              scaled to size 7.42601pt on input line 503.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 503.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\omega' on input line 503.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 503.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 503.
+
+[12 <./figures/pcontroller_saturation_steps.png>]
+<figures/lrr_lead.png, id=340, 448.074pt x 433.62pt>
+File: figures/lrr_lead.png Graphic file (type png)
+<use figures/lrr_lead.png>
+Package pdftex.def Info: figures/lrr_lead.png  used on input line 528.
+(pdftex.def)             Requested size: 352.31625pt x 340.95485pt.
+ [13] [14 <./figures/lrr_lead.png>]
+<figures/lead_integral_tracking.png, id=361, 462.528pt x 433.62pt>
+File: figures/lead_integral_tracking.png Graphic file (type png)
+<use figures/lead_integral_tracking.png>
+Package pdftex.def Info: figures/lead_integral_tracking.png  used on input line
+ 554.
+(pdftex.def)             Requested size: 375.80544pt x 352.33524pt.
+ [15 <./figures/lead_integral_tracking.png>]
+<figures/bode_summary.png, id=372, 469.755pt x 433.62pt>
 File: figures/bode_summary.png Graphic file (type png)
 <use figures/bode_summary.png>
-Package pdftex.def Info: figures/bode_summary.png  used on input line 372.
+Package pdftex.def Info: figures/bode_summary.png  used on input line 605.
 (pdftex.def)             Requested size: 422.77664pt x 390.2544pt.
-
-[9{C:/Users/gyang/AppData/Local/Programs/MiKTeX/fonts/enc/dvips/tex-gyre/q-ts1.
-enc} <./figures/bode_summary.png>] [10
-
-] (prelab2.aux)
+ [16] [17 <./figures/bode_summary.png>] (prelab2.aux)
  ***********
 LaTeX2e <2023-06-01> patch level 1
 L3 programming layer <2020/03/25>
  ***********
+
+
+LaTeX Warning: There were undefined references.
+
 Package rerunfilecheck Info: File `prelab2.out' has not changed.
-(rerunfilecheck)             Checksum: 62AF29A87DA35CAE68C6A864472884BE;2902.
+(rerunfilecheck)             Checksum: B08721F23F068920EF5F98398D04AADD;4100.
  ) 
 Here is how much of TeX's memory you used:
- 40904 strings out of 475248
- 843677 string characters out of 5757812
- 1934785 words of memory out of 5000000
- 61603 multiletter control sequences out of 15000+600000
- 671126 words of font info for 232 fonts, out of 8000000 for 9000
+ 41151 strings out of 475248
+ 849437 string characters out of 5757812
+ 1937785 words of memory out of 5000000
+ 61790 multiletter control sequences out of 15000+600000
+ 671867 words of font info for 245 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 93i,15n,117p,1006b,1124s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 93i,22n,117p,1006b,1077s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/gyang/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/NewTXM
 I.pfb><C:/Users/gyang/AppData/Local/Programs/MiKTeX/fonts/type1/public/newtx/Ne
 wTXMI7.pfb><C:/Users/gyang/AppData/Local/Programs/MiKTeX/fonts/type1/bera/fvmb8
@@ -1754,9 +1801,9 @@ lic/newtx/txmiaX.pfb><C:/Users/gyang/AppData/Local/Programs/MiKTeX/fonts/type1/
 public/newtx/txsys.pfb><C:/Users/gyang/AppData/Local/Programs/MiKTeX/fonts/type
 1/public/newtx/ztmb.pfb><C:/Users/gyang/AppData/Local/Programs/MiKTeX/fonts/typ
 e1/public/newtx/ztmr.pfb>
-Output written on prelab2.pdf (14 pages, 1065367 bytes).
+Output written on prelab2.pdf (21 pages, 1417568 bytes).
 PDF statistics:
- 340 PDF objects out of 1000 (max. 8388607)
- 54 named destinations out of 1000 (max. 500000)
- 48450 words of extra memory for PDF output out of 51595 (max. 10000000)
+ 463 PDF objects out of 1000 (max. 8388607)
+ 81 named destinations out of 1000 (max. 500000)
+ 47496 words of extra memory for PDF output out of 51595 (max. 10000000)
 

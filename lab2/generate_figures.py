@@ -65,6 +65,30 @@ def compare_step_responses(gz: control.TransferFunction, ssd: control.StateSpace
     plt.close()
 
 
+def compare_bode_models(gz: control.TransferFunction, ssd: control.StateSpace, path: Path):
+    omega = np.logspace(0, 2.2, 450)
+    mag_tf, phase_tf, _ = control.freqresp(gz, omega)
+    mag_ss, phase_ss, _ = control.freqresp(ssd, omega)
+
+    fig, ax = plt.subplots(2, 1, figsize=(6.5, 5.5), sharex=True)
+    ax[0].semilogx(omega, 20 * np.log10(mag_tf.squeeze()), label="Transfer Function")
+    ax[0].semilogx(omega, 20 * np.log10(mag_ss.squeeze()), "--", label="State-Space")
+    ax[0].set_ylabel("Magnitude [dB]")
+    ax[0].grid(True, which="both")
+    ax[0].legend()
+
+    ax[1].semilogx(omega, np.rad2deg(phase_tf.squeeze()))
+    ax[1].semilogx(omega, np.rad2deg(phase_ss.squeeze()), "--")
+    ax[1].set_ylabel("Phase [deg]")
+    ax[1].set_xlabel("Frequency [rad/s]")
+    ax[1].grid(True, which="both")
+
+    fig.suptitle("Discrete Model Frequency Response Comparison")
+    fig.tight_layout()
+    fig.savefig(path / "bode_model_compare.png", dpi=200)
+    plt.close(fig)
+
+
 def plot_root_locus(
     sys: control.TransferFunction,
     path: Path,
@@ -138,25 +162,36 @@ def plot_root_locus(
     plt.close()
 
 
-def bode_data(sys, omega: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+def bode_data(
+    sys,
+    omega: np.ndarray,
+    unwrap_phase: bool = False,
+    wrap_phase: bool = True,
+) -> Tuple[np.ndarray, np.ndarray]:
     mag, phase, _ = control.freqresp(sys, omega)
-    return 20 * np.log10(mag.squeeze()), np.rad2deg(phase.squeeze())
+    phase = phase.squeeze()
+    if unwrap_phase:
+        phase = np.unwrap(phase)
+    phase_deg = np.rad2deg(phase)
+    if wrap_phase:
+        phase_deg = (phase_deg + 180.0) % 360.0 - 180.0
+    return 20 * np.log10(mag.squeeze()), phase_deg
 
 
 def plot_bode_comparison(gs, gz, path: Path):
-    omega = np.logspace(0, 4, 800)
-    mag_s, ph_s = bode_data(gs, omega)
-    mag_z, ph_z = bode_data(gz, omega)
+    omega = np.logspace(0, 2.2, 800)
+    mag_s, ph_s = bode_data(gs, omega, unwrap_phase=True, wrap_phase=False)
+    mag_z, ph_z = bode_data(gz, omega, unwrap_phase=True, wrap_phase=False)
 
     fig, ax = plt.subplots(2, 1, figsize=(6.5, 6), sharex=True)
-    ax[0].semilogx(omega, mag_s, label="G(s)")
-    ax[0].semilogx(omega, mag_z, label="G(z)")
+    ax[0].semilogx(omega, mag_s, label="G(s)", alpha=0.8, linewidth=2)
+    ax[0].semilogx(omega, mag_z, label="G(z)", alpha=0.8, linewidth=1.5)
     ax[0].set_ylabel("Magnitude [dB]")
     ax[0].grid(True, which="both")
     ax[0].legend()
 
-    ax[1].semilogx(omega, ph_s)
-    ax[1].semilogx(omega, ph_z)
+    ax[1].semilogx(omega, ph_s, alpha=0.8, linewidth=2)
+    ax[1].semilogx(omega, ph_z, alpha=0.8, linewidth=1.5)
     ax[1].set_ylabel("Phase [deg]")
     ax[1].set_xlabel("Frequency [rad/s]")
     ax[1].grid(True, which="both")
@@ -184,6 +219,33 @@ def plot_sampling_bodes(gs, samples: Iterable[float], path: Path):
     plt.close()
 
 
+def plot_pcontroller_bode(gz, kp: float, path: Path):
+    """Bode of the discrete open loop with the selected Kp."""
+    omega = np.logspace(0, 3.5, 700)
+    loop = kp * gz
+    mag, phase_deg = bode_data(loop, omega, unwrap_phase=True, wrap_phase=False)
+
+    fig, ax = plt.subplots(2, 1, figsize=(6.3, 5.5), sharex=True)
+    ax[0].semilogx(omega, mag, label=r"$K_p G_\text{ol}(z)$")
+    ax[0].axhline(0.0, color="k", linestyle=":")
+    ax[0].axvline(60.0, color="r", linestyle="--", linewidth=1.1, label=r"$\omega=60$ rad/s")
+    ax[0].set_ylabel("Magnitude [dB]")
+    ax[0].grid(True, which="both")
+    ax[0].legend()
+
+    ax[1].semilogx(omega, phase_deg)
+    ax[1].axvline(60.0, color="r", linestyle="--", linewidth=1.1)
+    ax[1].set_ylabel("Phase [deg]")
+    ax[1].set_xlabel("Frequency [rad/s]")
+    ax[1].grid(True, which="both")
+    ax[1].set_ylim(-230, -40)
+
+    fig.suptitle("Bode of Discrete Loop with $K_p=1.253$ V/mm")
+    fig.tight_layout()
+    fig.savefig(path / "pcontroller_bode.png", dpi=200)
+    plt.close(fig)
+
+
 def simulate_p_controller(kp: float, mu_vals, sat_vals, path: Path):
     def friction_torque(omega: float, mu: float) -> float:
         if mu == 0.0:
@@ -209,18 +271,22 @@ def simulate_p_controller(kp: float, mu_vals, sat_vals, path: Path):
         return np.array(time), np.array(traj)
 
     fig, ax = plt.subplots(2, 1, figsize=(6.2, 6), sharex=True)
+    friction_curves = []
     for mu in mu_vals:
         t, y = simulate(mu, sat=3.0)
-        ax[0].plot(t, y, label=f"μ={mu:.1f} Nm")
-    ax[0].set_title("Effect of Coulomb Friction (sat=±3A)")
+        friction_curves.append((mu, t, y))
+        ax[0].plot(t, y, label=f"mu={mu:.1f} Nm")
+    ax[0].set_title("Effect of Coulomb Friction (sat=+/-3A)")
     ax[0].set_ylabel("Position [mm]")
     ax[0].grid(True, which="both")
     ax[0].legend()
 
+    saturation_curves = []
     for sat in sat_vals:
         t, y = simulate(mu=0.3, sat=sat)
-        ax[1].plot(t, y, label=f"sat=±{sat:.1f} A")
-    ax[1].set_title("Effect of Current Saturation (μ=0.3 Nm)")
+        saturation_curves.append((sat, t, y))
+        ax[1].plot(t, y, label=f"sat=+/-{sat:.1f} A")
+    ax[1].set_title("Effect of Current Saturation (mu=0.3 Nm)")
     ax[1].set_xlabel("Time [s]")
     ax[1].set_ylabel("Position [mm]")
     ax[1].grid(True, which="both")
@@ -229,6 +295,31 @@ def simulate_p_controller(kp: float, mu_vals, sat_vals, path: Path):
     fig.tight_layout()
     fig.savefig(path / "pcontroller_nonlinear_effects.png", dpi=200)
     plt.close(fig)
+
+    # Dedicated plots for report
+    plt.figure(figsize=(6.2, 4.0))
+    for mu, t, y in friction_curves:
+        plt.plot(t * 1000.0, y, label=f"mu_k={mu:.1f} Nm")
+    plt.xlabel("Time [ms]")
+    plt.ylabel("Position [mm]")
+    plt.title("Step Response vs Coulomb Friction (sat = +/-3 A)")
+    plt.grid(True, which="both")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(path / "pcontroller_friction_steps.png", dpi=200)
+    plt.close()
+
+    plt.figure(figsize=(6.2, 4.0))
+    for sat, t, y in saturation_curves:
+        plt.plot(t * 1000.0, y, label=f"sat = +/-{sat:.1f} A")
+    plt.xlabel("Time [ms]")
+    plt.ylabel("Position [mm]")
+    plt.title("Step Response vs Saturation Limit (mu_k = 0.3 Nm)")
+    plt.grid(True, which="both")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(path / "pcontroller_saturation_steps.png", dpi=200)
+    plt.close()
 
 
 def design_lead_lag(gs):
@@ -251,7 +342,7 @@ def design_lead_lag(gs):
 
 def simulate_compensators(gs, lead, path: Path):
     omega = np.logspace(0, 4, 800)
-    mag, phase = bode_data(lead, omega)
+    mag, phase = bode_data(lead, omega, unwrap_phase=True, wrap_phase=False)
     plt.figure(figsize=(6.2, 4.5))
     plt.semilogx(omega, mag)
     plt.title("Lead Compensator Bode")
@@ -264,7 +355,7 @@ def simulate_compensators(gs, lead, path: Path):
 
     loop = control.series(lead, gs)
     omega = np.logspace(0, 4, 800)
-    mag_loop, phase_loop = bode_data(loop, omega)
+    mag_loop, phase_loop = bode_data(loop, omega, unwrap_phase=True, wrap_phase=False)
     fig, ax = plt.subplots(2, 1, figsize=(6.2, 6), sharex=True)
     ax[0].semilogx(omega, mag_loop)
     ax[0].axhline(0, color="k", linestyle=":")
@@ -296,7 +387,7 @@ def simulate_compensators(gs, lead, path: Path):
     omega = np.logspace(0, 4, 800)
     fig, ax = plt.subplots(2, 1, figsize=(6.5, 6), sharex=True)
     for label, sys in systems.items():
-        mag, phase = bode_data(sys, omega)
+        mag, phase = bode_data(sys, omega, unwrap_phase=True, wrap_phase=False)
         ax[0].semilogx(omega, mag, label=label)
         ax[1].semilogx(omega, phase)
     ax[0].set_ylabel("Magnitude [dB]")
@@ -373,6 +464,7 @@ def main():
     ssd = discrete_state_space(T_S)
 
     compare_step_responses(gz, ssd, T_S, fig_dir)
+    compare_bode_models(gz, ssd, fig_dir)
     continuous_limits = ((-15.0, 2.0), (-12.0, 12.0))
     discrete_limits = ((-3.5, 1.5), (-2.2, 2.2))
     plot_root_locus(
@@ -396,6 +488,7 @@ def main():
 
     mag, _, _ = control.freqresp(gz, np.array([60.0]))
     kp = 1.0 / mag.squeeze()
+    plot_pcontroller_bode(gz, kp, fig_dir)
     simulate_p_controller(kp, mu_vals=[0.5, 0.3, 0.1, 0.0], sat_vals=[0.5, 1.0, 3.0], path=fig_dir)
 
     lead, lead_meta = design_lead_lag(gs)
