@@ -1,0 +1,14 @@
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}%
+\contentsline {section}{\numberline {2}Part A -- Trajectory Generation}{1}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Trapezoidal Velocity Profile Equations}{1}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Toolpath}{2}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Motion Profiles}{2}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Axis Commands}{3}{subsection.2.4}%
+\contentsline {section}{\numberline {3}Part B -- Two-Axis Controller Design}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Controller Design Methodology}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Bode Plots}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Closed-Loop Analysis}{6}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Part C -- Contouring Performance Simulation}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Simulation Results (Handout Trajectory)}{7}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Independent Creative Section: Custom Trajectory}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Simulation of Custom Trajectory}{11}{subsection.4.3}%

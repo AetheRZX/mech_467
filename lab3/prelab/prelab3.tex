@@ -1,0 +1,395 @@
+\documentclass[12pt]{article}
+% --- Page geometry & core packages ---
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+% --- Fonts & microtypography (Times-like) ---
+\usepackage{newtxtext,newtxmath}
+\usepackage{microtype}
+% --- In your preamble (once) ---
+\usepackage{listings}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.85]{beramono}
+\usepackage{newunicodechar}
+\newunicodechar{μ}{\ensuremath{\mu}}
+
+\lstdefinestyle{pycode}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  numberstyle=\scriptsize\color{black!50},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{black!20},
+  showstringspaces=false,
+  breaklines=true,
+  columns=fullflexible,
+  tabsize=4,
+  literate={
+    {→}{{$\to$}}1
+    {←}{{$\leftarrow$}}1
+    {·}{{$\cdot$}}1
+    {×}{{$\times$}}1
+    {–}{{-}}1
+    {—}{{-}}1
+    {−}{{-}}1
+    {≥}{{$\ge$}}1
+    {≤}{{$\le$}}1
+    {°}{{$^\circ$}}1
+    {Ω}{{$\Omega$}}1
+    {µ}{{$\mu$}}1
+  }
+}
+\lstset{style=pycode}
+% --- Captions ---
+\usepackage{caption}
+\captionsetup{
+  font=small,
+  labelfont=bf,
+  labelsep=period,
+  justification=centering,
+  singlelinecheck=false,
+  skip=6pt
+}
+\captionsetup[table]{position=top}
+% --- Section headings ---
+\usepackage{titlesec}
+\titleformat{\section}{\Large\sffamily\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\sffamily\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.2ex plus .3ex}{0.6ex}
+\titlespacing*{\subsection}{0pt}{1.0ex plus .2ex}{0.4ex}
+% --- Header / footer ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\newcommand{\coursenum}{MECH 467}
+\newcommand{\labnum}{Prelab 3}
+\newcommand{\labtitle}{Simulation of Contouring Performance}
+\newcommand{\studentname}{Ryan Edric Nashota}
+\newcommand{\studentid}{33508219}
+\lhead{\sffamily \labnum}
+\chead{\sffamily \labtitle}
+\rhead{\sffamily \studentname}
+\renewcommand{\headrulewidth}{0.4pt}
+\cfoot{\sffamily \thepage}
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+\usepackage{titlesec}
+\titleformat{\paragraph}[block]{\normalfont\normalsize\bfseries}{}{}{}
+\titlespacing*{\paragraph}{0pt}{0.8ex}{0.6ex}
+% --- Cleveref ---
+\usepackage[nameinlink,noabbrev]{cleveref}
+\Crefname{figure}{Figure}{Figures}
+\Crefname{table}{Table}{Tables}
+\Crefname{equation}{Equation}{Equations}
+\Crefname{section}{Section}{Sections}
+\crefname{figure}{figure}{figures}
+\crefname{table}{table}{tables}
+\crefname{equation}{equation}{equations}
+\crefname{section}{section}{sections}
+% --- Graphics path ---
+\graphicspath{{.}}
+\newtcolorbox{infobox}[1][]{colback=blue!5,colframe=cyan!60!black,title=#1,boxrule=0.6pt}
+% --- Unicode shortcuts ---
+\usepackage{newunicodechar}
+% --- siunitx custom units ---
+\DeclareSIUnit{\lbf}{lbf}
+\DeclareSIUnit{\inch}{in}
+\DeclareSIUnit{\lbfin}{lb\,in}
+% --- URL tweaks ---
+\usepackage{url}
+\def\UrlBreaks{\do\_\do\-}
+\newcommand{\code}[1]{\texttt{\nolinkurl{#1}}}
+\emergencystretch=2em
+% --- Title block ---
+\makeatletter
+\renewcommand{\maketitle}{
+  \vspace*{1ex}
+  \begin{center}
+    {\sffamily
+      {\Large \coursenum\ --- \labnum\par}
+      \vspace{0.6ex}
+      {\huge \bfseries \labtitle\par}
+      \vspace{0.8ex}
+      {\large \studentname\enspace (ID:\ \studentid)\par}
+      \vspace{0.6ex}
+    }
+  \end{center}
+  \vspace{1.2ex}
+  \thispagestyle{empty}
+}
+\makeatother
+% --- Body spacing ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+% --- Metadata ---
+\title{\coursenum\ \labnum\\\labtitle}
+\author{\studentname\\Student ID: \studentid}
+\date{}
+\begin{document}
+\pagenumbering{gobble}
+\maketitle
+\clearpage
+\pagenumbering{roman}
+\setcounter{page}{1}
+\renewcommand{\contentsname}{Table of Contents}
+\tableofcontents
+\clearpage
+\renewcommand{\listfigurename}{Table of Figures}
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+\setcounter{tocdepth}{2}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\pagestyle{fancy}
+
+\section{Introduction}
+
+This prelab focuses on the design and simulation of a two-axis motion control system. The objectives include generating trajectories for a specified toolpath, designing Lead-Lag controllers to meet specific bandwidth and phase margin requirements, and simulating the contouring performance of the system. Additionally, a custom trajectory is designed for experimental implementation.
+
+\section{Part A -- Trajectory Generation}
+\label{sec:partA}
+
+\begin{infobox}[Part A Deliverables]
+  \begin{itemize}
+    \item Generated axis commands for the specified toolpath (two lines and a full circle).
+    \item Plotted the toolpath, displacement/feedrate/acceleration profiles, and axis command profiles.
+  \end{itemize}
+\end{infobox}
+
+The reference toolpath consists of two linear segments and one full circular segment. The trajectory was generated using a trapezoidal velocity profile with $F = 200~\si{mm/s}$ and $A = D = 1000~\si{mm/s^2}$. The interpolation period was $T_i = 0.1~\si{ms}$.
+
+\subsection{Trapezoidal Velocity Profile Equations}
+The trajectory generation is based on the trapezoidal velocity profile. For a given total displacement $S_{total}$, desired feedrate $F$, and acceleration/deceleration $A, D$, the acceleration time $T_a$, deceleration time $T_d$, and constant velocity time $T_c$ are calculated as follows:
+
+\begin{equation}
+    T_a = \frac{F}{A}, \quad T_d = \frac{F}{D}
+\end{equation}
+
+The distances covered during acceleration ($S_a$) and deceleration ($S_d$) are:
+\begin{equation}
+    S_a = \frac{1}{2} F T_a, \quad S_d = \frac{1}{2} F T_d
+\end{equation}
+
+If $S_a + S_d > S_{total}$, the profile becomes triangular, and the peak velocity is reduced. Otherwise, the constant velocity distance is $S_c = S_{total} - S_a - S_d$, and the time at constant velocity is $T_c = S_c / F$.
+
+The displacement $s(t)$, velocity $\dot{s}(t)$, and acceleration $\ddot{s}(t)$ profiles are then constructed by integrating the acceleration profile:
+\begin{equation}
+    \ddot{s}(t) = \begin{cases} 
+    A & 0 \le t < T_a \\
+    0 & T_a \le t < T_a + T_c \\
+    -D & T_a + T_c \le t \le T_a + T_c + T_d
+    \end{cases}
+\end{equation}
+
+For circular interpolation, the tangential motion follows the same profile along the arc length $S = R \theta$. The axis commands are derived as:
+\begin{equation}
+    x(t) = x_c + R \cos(\theta(t)), \quad y(t) = y_c + R \sin(\theta(t))
+\end{equation}
+where $\theta(t) = \theta_{start} \pm s(t)/R$.
+
+\subsection{Toolpath}
+Figure~\ref{fig:handout_toolpath} shows the generated toolpath in the XY plane. The path starts at $(0,0)$, moves linearly to $(40,30)$, then to $(60,30)$, and finally executes a full circle centered at $(90,30)$.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{handout_toolpath.png}
+  \caption{Generated reference toolpath.}
+  \label{fig:handout_toolpath}
+\end{figure}
+
+\subsection{Motion Profiles}
+Figure~\ref{fig:handout_s_profiles} displays the displacement ($s$), feedrate ($\dot{s}$), and tangential acceleration ($\ddot{s}$) profiles along the path. The trapezoidal nature of the velocity profile is clearly visible, with constant acceleration and deceleration phases.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{handout_s_profiles.png}
+  \caption{Displacement, Feedrate, and Tangential Acceleration profiles.}
+  \label{fig:handout_s_profiles}
+\end{figure}
+
+\subsection{Axis Commands}
+Figure~\ref{fig:handout_axis_profiles} shows the position, velocity, and acceleration commands for the X and Y axes. The circular segment introduces sinusoidal variations in the axis velocities and accelerations.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{handout_axis_profiles.png}
+  \caption{Axis Position, Velocity, and Acceleration commands.}
+  \label{fig:handout_axis_profiles}
+\end{figure}
+
+\section{Part B -- Two-Axis Controller Design}
+\label{sec:partB}
+
+\begin{infobox}[Part B Deliverables]
+  \begin{itemize}
+    \item Designed Lead-Lag controllers with integral action for three cases (LBW, HBW, Mismatched).
+    \item Generated Bode plots for open-loop systems.
+    \item Analyzed closed-loop poles, zeros, rise time, and overshoot.
+  \end{itemize}
+\end{infobox}
+
+\subsection{Controller Design Methodology}
+The plant transfer function for each axis is given by:
+\begin{equation}
+    G(s) = \frac{K_a K_t K_e}{s(J_e s + B_e)}
+\end{equation}
+
+A Lead-Lag compensator is designed to boost the phase margin at the desired crossover frequency $\omega_c$. The compensator form is:
+\begin{equation}
+    C_{LL}(s) = K \frac{\alpha \tau s + 1}{\tau s + 1}
+\end{equation}
+
+The required phase contribution $\phi_{max}$ is calculated as:
+\begin{equation}
+    \phi_{max} = -180^\circ + PM_{target} - \angle G(j\omega_c)
+\end{equation}
+
+The lead parameters are then found using:
+\begin{equation}
+    \alpha = \frac{1 + \sin(\phi_{max})}{1 - \sin(\phi_{max})}, \quad \tau = \frac{1}{\omega_c \sqrt{\alpha}}
+\end{equation}
+The gain $K$ is chosen to set the open-loop magnitude to unity at $\omega_c$:
+\begin{equation}
+    K = \frac{1}{|G(j\omega_c)| \sqrt{\alpha}}
+\end{equation}
+
+To eliminate steady-state error, an integral action is added:
+\begin{equation}
+    C_I(s) = \frac{s + K_i}{s}, \quad K_i = \frac{\omega_c}{10}
+\end{equation}
+
+The final controller $C(s) = C_{LL}(s) C_I(s)$ is discretized using Tustin's approximation for implementation.
+
+\subsection{Bode Plots}
+Figures~\ref{fig:bode_LBW} to \ref{fig:bode_Mismatch} show the open-loop Bode plots for the designed controllers. The plots confirm that the target crossover frequencies and phase margins are achieved.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.48\linewidth]{bode_LBW_X.png}
+  \includegraphics[width=0.48\linewidth]{bode_LBW_Y.png}
+  \caption{Bode plots for Case 1 (LBW): X Axis (left) and Y Axis (right).}
+  \label{fig:bode_LBW}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.48\linewidth]{bode_HBW_X.png}
+  \includegraphics[width=0.48\linewidth]{bode_HBW_Y.png}
+  \caption{Bode plots for Case 2 (HBW): X Axis (left) and Y Axis (right).}
+  \label{fig:bode_HBW}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.48\linewidth]{bode_Mismatch_X.png}
+  \includegraphics[width=0.48\linewidth]{bode_Mismatch_Y.png}
+  \caption{Bode plots for Case 3 (Mismatch): X Axis (left) and Y Axis (right).}
+  \label{fig:bode_Mismatch}
+\end{figure}
+
+\subsection{Closed-Loop Analysis}
+Table~\ref{tab:closed_loop_analysis} summarizes the closed-loop performance metrics and pole/zero locations for the designed controllers. The higher bandwidth (HBW) cases show faster rise times but slightly higher overshoot. The mismatched case combines the fast response of the X axis with the slower response of the Y axis.
+
+\begin{table}[H]
+  \centering
+  \caption{Closed-Loop System Analysis}
+  \label{tab:closed_loop_analysis}
+  \resizebox{\textwidth}{!}{
+  \begin{tabular}{llcccc}
+    \toprule
+    Case & Axis & Rise Time [ms] & Overshoot [\%] & Dominant Poles & Zeros \\
+    \midrule
+    \multirow{2}{*}{LBW} & X & 9.00 & 22.37 & $0.986 \pm 0.008j$ & $-0.999, 0.999, 0.995$ \\
+                         & Y & 9.30 & 21.17 & $0.987 \pm 0.010j$ & $-0.999, 0.999, 0.995$ \\
+    \midrule
+    \multirow{2}{*}{HBW} & X & 4.40 & 24.61 & $0.998, 0.982$ & $-0.999, 0.997, 0.992$ \\
+                         & Y & 4.50 & 23.73 & $0.997, 0.984$ & $-0.999, 0.997, 0.992$ \\
+    \midrule
+    \multirow{2}{*}{Mismatch} & X & 4.40 & 24.61 & $0.998, 0.982$ & $-0.999, 0.997, 0.992$ \\
+                              & Y & 9.30 & 21.17 & $0.987 \pm 0.010j$ & $-0.999, 0.999, 0.995$ \\
+    \bottomrule
+  \end{tabular}
+  }
+\end{table}
+
+\section{Part C -- Contouring Performance Simulation}
+\label{sec:partC}
+
+\begin{infobox}[Part C Deliverables]
+  \begin{itemize}
+    \item Simulated the contouring performance using the discrete controllers and continuous plant model.
+    \item Designed a custom toolpath for experimental implementation.
+  \end{itemize}
+\end{infobox}
+
+\subsection{Simulation Results (Handout Trajectory)}
+The contouring performance was simulated using the Case 1 (LBW) controllers. Figure~\ref{fig:simulated_contour} shows the simulated path overlaid on the reference path. The system tracks the reference path closely, with deviations primarily occurring at corners and during the circular segment where the axis dynamics introduce lag.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\linewidth]{simulated_contour_lbw.png}
+  \caption{Simulated contouring performance (LBW Controller).}
+  \label{fig:simulated_contour}
+\end{figure}
+
+Figure~\ref{fig:tracking_errors} shows the tracking errors for both axes. The errors are largest during acceleration and deceleration phases, as expected for a Type 1 system tracking a ramp input (velocity).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{tracking_errors_lbw.png}
+  \caption{Tracking errors in X and Y axes during the trajectory.}
+  \label{fig:tracking_errors}
+\end{figure}
+
+\subsection{Independent Creative Section: Custom Trajectory}
+A custom trajectory was designed for the experimental session. The shape resembles the letter "M" with rounded tops, constructed using linear and circular segments.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\linewidth]{custom_toolpath.png}
+  \caption{Custom "M" shape trajectory.}
+  \label{fig:custom_toolpath}
+\end{figure}
+
+Figure~\ref{fig:custom_profiles} shows the motion profiles for the custom trajectory.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{custom_s_profiles.png}
+  \caption{Motion profiles for the custom trajectory.}
+  \label{fig:custom_profiles}
+\end{figure}
+
+\subsection{Simulation of Custom Trajectory}
+The custom trajectory was also simulated using the LBW controllers to verify feasibility and performance. Figure~\ref{fig:simulated_contour_custom} shows the simulated path tracking the reference "M" shape.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.6\linewidth]{simulated_contour_custom.png}
+  \caption{Simulated contouring performance for the custom "M" trajectory.}
+  \label{fig:simulated_contour_custom}
+\end{figure}
+
+Figure~\ref{fig:tracking_errors_custom} displays the tracking errors. Similar to the handout trajectory, errors peak at the sharp corners where the velocity changes instantaneously in the ideal path (though smoothed by the trapezoidal profile in time, the geometric corner still presents a challenge for the tracking system).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{tracking_errors_custom.png}
+  \caption{Tracking errors for the custom trajectory.}
+  \label{fig:tracking_errors_custom}
+\end{figure}
+
+\end{document}

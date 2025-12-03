@@ -1,0 +1,196 @@
+\documentclass[11pt, letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{palatino} % Use Palatino font for a different look
+\usepackage[margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath, amssymb}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% --- Custom Colors ---
+\definecolor{headerblue}{RGB}{0, 50, 100}
+\definecolor{sectiongray}{RGB}{50, 50, 50}
+
+% --- Header/Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textcolor{headerblue}{\textbf{MECH 467 - Lab 3}}}
+\rhead{\textcolor{headerblue}{\textbf{Gyan Edbert Zesiro (38600060)}}}
+\cfoot{\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{headerblue}\leaders\hrule height \headrulewidth\hfill}}
+
+% --- Section Styling ---
+\titleformat{\section}
+{\color{headerblue}\normalfont\Large\bfseries}
+{\thesection}{1em}{}
+\titleformat{\subsection}
+{\color{sectiongray}\normalfont\large\bfseries}
+{\thesubsection}{1em}{}
+
+% --- Title Page ---
+\title{
+    \vspace{2in}
+    \textcolor{headerblue}{\hrule height 2pt}
+    \vspace{0.1in}
+    \textbf{\Huge Prelab 3: Trajectory Generation \& Control} \\
+    \vspace{0.1in}
+    \large Simulation of Contouring Performance in Coordinated Two-Axis Motion
+    \vspace{0.1in}
+    \textcolor{headerblue}{\hrule height 2pt}
+}
+\author{\textbf{Gyan Edbert Zesiro} \\ Student ID: 38600060 \\ MECH 467}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+\newpage
+
+\setcounter{page}{1}
+
+\section{Introduction}
+This prelab report details the design and simulation of a two-axis motion control system. The primary objectives are to generate precise trajectories for a CNC-style machine, design Lead-Lag controllers to meet specific frequency domain specifications, and analyze the contouring performance of the system under various conditions. A custom "G" shape trajectory is also implemented to demonstrate the flexibility of the trajectory generation algorithms.
+
+\section{Part A: Trajectory Generation}
+The reference toolpath consists of two linear segments and one full circular segment. The trajectory is generated using a trapezoidal velocity profile to ensure smooth motion with bounded acceleration.
+
+\subsection{Toolpath Visualization}
+Figure \ref{fig:handout_path} illustrates the generated toolpath in the XY plane. The path starts at the origin (0,0), moves to (40,30), then to (60,30), and finally executes a full circle centered at (90,30).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{handout_path.png}
+    \caption{Generated Reference Toolpath (Handout)}
+    \label{fig:handout_path}
+\end{figure}
+
+\subsection{Kinematic Profiles}
+The displacement ($s$), feedrate ($\dot{s}$), and tangential acceleration ($\ddot{s}$) profiles are shown in Figure \ref{fig:handout_profiles}. The feedrate profile exhibits the characteristic trapezoidal shape, with constant acceleration and deceleration phases.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{handout_profiles.png}
+    \caption{Tangential Motion Profiles: Displacement, Feedrate, Acceleration}
+    \label{fig:handout_profiles}
+\end{figure}
+
+\subsection{Axis Commands}
+The decomposed axis commands for position, velocity, and acceleration are presented in Figure \ref{fig:handout_axis_cmd}. The sinusoidal nature of the commands during the circular interpolation is clearly visible.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{handout_axis_cmd.png}
+    \caption{Axis Commands: Position, Velocity, Acceleration for X and Y Axes}
+    \label{fig:handout_axis_cmd}
+\end{figure}
+
+\section{Part B: Controller Design}
+Lead-Lag controllers were designed to meet specific bandwidth and phase margin requirements for the X and Y axes. The design targets a Phase Margin (PM) of $60^\circ$ at specified crossover frequencies.
+
+\subsection{Design Methodology}
+The Lead compensator adds phase at the crossover frequency to achieve the desired margin. The transfer function is given by:
+\begin{equation}
+    C_{Lead}(s) = K \frac{\alpha \tau s + 1}{\tau s + 1}
+\end{equation}
+where $\alpha$ and $\tau$ are determined based on the required phase boost $\phi_{max}$. An integral action $C_I(s) = \frac{s + K_i}{s}$ is cascaded to eliminate steady-state error.
+
+\subsection{Frequency Response Analysis}
+The Bode plots for the Low Bandwidth (LBW), High Bandwidth (HBW), and Mismatched cases are shown below.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{bode_LBW.png}
+    \caption{Bode Plot: Low Bandwidth Case ($\omega_c = 20$ Hz)}
+    \label{fig:bode_lbw}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{bode_HBW.png}
+    \caption{Bode Plot: High Bandwidth Case ($\omega_c = 40$ Hz)}
+    \label{fig:bode_hbw}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{bode_Mismatch.png}
+    \caption{Bode Plot: Mismatched Dynamics Case}
+    \label{fig:bode_mismatch}
+\end{figure}
+
+\section{Part C: Simulation Results}
+The designed controllers were implemented in a discrete-time simulation to evaluate contouring performance.
+
+\subsection{Handout Trajectory Performance}
+The simulation results for the LBW controller tracking the handout trajectory are shown in Figure \ref{fig:sim_path_lbw}. The system tracks the reference path closely.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{sim_path_LBW.png}
+    \caption{Simulated Contouring Performance (LBW)}
+    \label{fig:sim_path_lbw}
+\end{figure}
+
+The tracking errors (Figure \ref{fig:error_lbw}) show peaks at the corners and during acceleration phases, consistent with the Type 1 system characteristics.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{error_LBW.png}
+    \caption{Tracking Errors for Handout Trajectory (LBW)}
+    \label{fig:error_lbw}
+\end{figure}
+
+Figure \ref{fig:scope_lbw} mimics a Simulink Scope output, showing the X and Y positions over time along with a scaled clock signal.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{scope_LBW.png}
+    \caption{Scope Output: X and Y Position vs Time}
+    \label{fig:scope_lbw}
+\end{figure}
+
+\subsection{Custom Trajectory: "G" Shape}
+A custom "G" shape trajectory was designed and simulated. The path consists of linear segments and a semi-circle to form the letter G.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{custom_path.png}
+    \caption{Custom "G" Shape Toolpath}
+    \label{fig:custom_path}
+\end{figure}
+
+The simulation results (Figure \ref{fig:custom_sim_path}) demonstrate that the controller can effectively track this complex shape.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{custom_sim_path.png}
+    \caption{Simulated Custom "G" Trajectory (LBW)}
+    \label{fig:custom_sim_path}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{custom_error.png}
+    \caption{Tracking Errors for Custom Trajectory}
+    \label{fig:custom_error}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{custom_scope.png}
+    \caption{Scope Output for Custom Trajectory}
+    \label{fig:custom_scope}
+\end{figure}
+
+\section{Conclusion}
+The prelab successfully demonstrated the design and implementation of a two-axis motion control system. The Lead-Lag controllers met the design specifications, and the simulation results verified the system's ability to track both standard and custom trajectories with acceptable accuracy. The custom "G" trajectory further validated the flexibility of the trajectory generation and control framework.
+
+\end{document}

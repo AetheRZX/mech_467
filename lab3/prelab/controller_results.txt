@@ -1,0 +1,43 @@
+Case: LBW
+  Axis X:
+    Rise Time: 9.00 ms
+    Overshoot: 22.37 %
+    Bandwidth: LBW (Target)
+    Poles: [0.98608716+0.0080915j 0.98608716-0.0080915j 0.99871074+0.j
+ 0.99256165+0.j       ]
+    Zeros: [-0.9992816   0.99874415  0.99546936]
+  Axis Y:
+    Rise Time: 9.30 ms
+    Overshoot: 21.17 %
+    Bandwidth: LBW (Target)
+    Poles: [0.9871265 +0.01017341j 0.9871265 -0.01017341j 0.99868479+0.j
+ 0.99287815+0.j        ]
+    Zeros: [-0.9989894   0.99874415  0.99499011]
+Case: HBW
+  Axis X:
+    Rise Time: 4.40 ms
+    Overshoot: 24.61 %
+    Bandwidth: HBW (Target)
+    Poles: [0.997505   0.98228171 0.97495935 0.96525251]
+    Zeros: [-0.9992816   0.99748988  0.99213015]
+  Axis Y:
+    Rise Time: 4.50 ms
+    Overshoot: 23.73 %
+    Bandwidth: HBW (Target)
+    Poles: [0.99746903+0.j         0.98425865+0.j         0.97084274+0.01097577j
+ 0.97084274-0.01097577j]
+    Zeros: [-0.9989894   0.99748988  0.99165447]
+Case: Mismatch
+  Axis X:
+    Rise Time: 4.40 ms
+    Overshoot: 24.61 %
+    Bandwidth: Mismatch (Target)
+    Poles: [0.997505   0.98228171 0.97495935 0.96525251]
+    Zeros: [-0.9992816   0.99748988  0.99213015]
+  Axis Y:
+    Rise Time: 9.30 ms
+    Overshoot: 21.17 %
+    Bandwidth: Mismatch (Target)
+    Poles: [0.9871265 +0.01017341j 0.9871265 -0.01017341j 0.99868479+0.j
+ 0.99287815+0.j        ]
+    Zeros: [-0.9989894   0.99874415  0.99499011]

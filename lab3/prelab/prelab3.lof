@@ -1,0 +1,12 @@
+\contentsline {figure}{\numberline {1}{\ignorespaces Generated reference toolpath.}}{2}{figure.caption.1}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Displacement, Feedrate, and Tangential Acceleration profiles.}}{3}{figure.caption.2}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Axis Position, Velocity, and Acceleration commands.}}{4}{figure.caption.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Bode plots for Case 1 (LBW): X Axis (left) and Y Axis (right).}}{5}{figure.caption.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Bode plots for Case 2 (HBW): X Axis (left) and Y Axis (right).}}{6}{figure.caption.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Bode plots for Case 3 (Mismatch): X Axis (left) and Y Axis (right).}}{6}{figure.caption.6}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Simulated contouring performance (LBW Controller).}}{8}{figure.caption.8}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Tracking errors in X and Y axes during the trajectory.}}{9}{figure.caption.9}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Custom "M" shape trajectory.}}{10}{figure.caption.10}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Motion profiles for the custom trajectory.}}{11}{figure.caption.11}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Simulated contouring performance for the custom "M" trajectory.}}{12}{figure.caption.12}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Tracking errors for the custom trajectory.}}{13}{figure.caption.13}%
