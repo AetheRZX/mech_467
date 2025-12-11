@@ -202,16 +202,73 @@ def plot_bode_comparison(gs, gz, path: Path):
     plt.close(fig)
 
 
+    plt.close()
+
+
+def plot_manual_zoh_vs_c2d(gs, path: Path):
+    # Manual Discrete TF from Report Eq:
+    # num = 5.8048e-5 z + 5.8014e-5
+    # den = z^2 - 1.99825296 z + 0.99825296
+    
+    omega = np.logspace(0, 4, 800)
+    
+    # "Auto" (Python c2d)
+    gz_auto = convert_to_discrete(gs, T_S)
+    mag_auto, phase_auto, _ = control.freqresp(gz_auto, omega)
+    
+    # "Manual"
+    # Construct TF directly
+    num_man = [5.8048e-5, 5.8014e-5]
+    den_man = [1.0, -1.99825296, 0.99825296]
+    gz_manual = control.TransferFunction(num_man, den_man, dt=T_S)
+    
+    mag_manual, phase_manual, _ = control.freqresp(gz_manual, omega)
+    
+    fig, ax = plt.subplots(2, 1, figsize=(6.5, 6), sharex=True)
+    
+    # Magnitude
+    ax[0].semilogx(omega, 20*np.log10(mag_auto.squeeze()), 'b', linewidth=2, label="c2d command")
+    ax[0].semilogx(omega, 20*np.log10(mag_manual.squeeze()), 'r--', linewidth=2, label="Manual G(z)")
+    ax[0].set_ylabel("Magnitude [dB]")
+    ax[0].grid(True, which="both")
+    ax[0].legend()
+    
+    # Phase
+    # Unwrap manually or use bode_data if available, but simple conversion is fine here
+    ph_auto_deg = np.rad2deg(phase_auto.squeeze())
+    ph_man_deg = np.rad2deg(phase_manual.squeeze())
+    
+    ax[1].semilogx(omega, ph_auto_deg, 'b', linewidth=2)
+    ax[1].semilogx(omega, ph_man_deg, 'r--', linewidth=2)
+    ax[1].set_ylabel("Phase [deg]")
+    ax[1].set_xlabel("Frequency [rad/s]")
+    ax[1].grid(True, which="both")
+    
+    fig.suptitle("Manual G(z) vs c2d")
+    fig.tight_layout()
+    fig.savefig(path / "bode_manual_vs_c2d.png", dpi=200)
+    plt.close(fig)
+
+
 def plot_sampling_bodes(gs, samples: Iterable[float], path: Path):
-    omega = np.logspace(0, 4, 600)
-    plt.figure(figsize=(6.5, 4.5))
-    for ts in samples:
+    # Added "0.02, 0.002, 0.0002" specifically per user request
+    omega = np.logspace(0, 5, 800)
+    plt.figure(figsize=(7, 5))
+    
+    colors = ['r', 'g', 'b']
+    for idx, ts in enumerate(samples):
         gz = convert_to_discrete(gs, ts)
         mag, _ = bode_data(gz, omega)
-        plt.semilogx(omega, mag, label=f"T={ts:g}s")
+        
+        # Calculate Gain Margin for the table values
+        gm, pm, wcg, wcp = control.margin(gz)
+        gm_db = 20 * np.log10(gm) if gm > 0 else 0
+        
+        plt.semilogx(omega, mag, label=f"T={ts}s (GM={gm_db:.2f} dB)", color=colors[idx % len(colors)])
+        
     plt.xlabel("Frequency [rad/s]")
     plt.ylabel("Magnitude [dB]")
-    plt.title("Discrete Bode vs Sampling Time")
+    plt.title("Discrete Bode Magnitude vs Sampling Time")
     plt.grid(True, which="both")
     plt.legend()
     plt.tight_layout()
@@ -225,22 +282,52 @@ def plot_pcontroller_bode(gz, kp: float, path: Path):
     loop = kp * gz
     mag, phase_deg = bode_data(loop, omega, unwrap_phase=True, wrap_phase=False)
 
-    fig, ax = plt.subplots(2, 1, figsize=(6.3, 5.5), sharex=True)
+    gm, pm, wcg, wcp = control.margin(loop)
+    # gm is linear gain, convert to dB
+    # control.margin returns gm, pm, wcg (phase crossover), wcp (gain crossover)
+    # NOTE: In python-control < 0.9, the order was different. Assuming modern version.
+    # Wcg is frequency where phase is -180 (for GM calculation)
+    # Wcp is frequency where mag is 0 dB (for PM calculation)
+
+    fig, ax = plt.subplots(2, 1, figsize=(6.3, 6.5), sharex=True)
     ax[0].semilogx(omega, mag, label=r"$K_p G_\text{ol}(z)$")
-    ax[0].axhline(0.0, color="k", linestyle=":")
-    ax[0].axvline(60.0, color="r", linestyle="--", linewidth=1.1, label=r"$\omega=60$ rad/s")
+    ax[0].axhline(0.0, color="k", linestyle="-", linewidth=0.8)
+    
+    # Mark GM
+    if gm > 0 and not math.isinf(gm):
+        gm_db = 20 * np.log10(gm)
+        # At wcg, gain is -gm_db. 
+        # Actually standard definition: GM is how much we can raise gain.
+        # So at wcg, existing magnitude is -GM_dB.
+        mag_at_wcg = -gm_db
+        ax[0].scatter([wcg], [mag_at_wcg], color='r', marker='o', s=50, zorder=5)
+        ax[0].text(wcg, mag_at_wcg + 5, f"GM={gm_db:.1f} dB", color='r', fontsize=9, ha='center')
+
+    # Mark Gain Crossover (0 dB)
+    ax[0].scatter([wcp], [0], color='g', marker='o', s=50, zorder=5)
+
     ax[0].set_ylabel("Magnitude [dB]")
     ax[0].grid(True, which="both")
     ax[0].legend()
 
     ax[1].semilogx(omega, phase_deg)
-    ax[1].axvline(60.0, color="r", linestyle="--", linewidth=1.1)
+    ax[1].axhline(-180, color='k', linestyle='-', linewidth=0.8)
+    
+    # Mark PM
+    # At wcp, phase is -180 + PM
+    phase_at_wcp = -180 + pm
+    ax[1].scatter([wcp], [phase_at_wcp], color='g', marker='o', s=50, zorder=5)
+    ax[1].text(wcp, phase_at_wcp + 10, f"PM={pm:.1f} deg", color='g', fontsize=9, ha='center')
+    
+    # Mark Phase Crossover (-180)
+    if gm > 0:
+        ax[1].scatter([wcg], [-180], color='r', marker='o', s=50, zorder=5)
+
     ax[1].set_ylabel("Phase [deg]")
     ax[1].set_xlabel("Frequency [rad/s]")
     ax[1].grid(True, which="both")
-    ax[1].set_ylim(-230, -40)
 
-    fig.suptitle("Bode of Discrete Loop with $K_p=1.253$ V/mm")
+    fig.suptitle(f"Bode of Discrete Loop with $K_p={kp:.2f}$ V/mm")
     fig.tight_layout()
     fig.savefig(path / "pcontroller_bode.png", dpi=200)
     plt.close(fig)
@@ -356,16 +443,39 @@ def simulate_compensators(gs, lead, path: Path):
     loop = control.series(lead, gs)
     omega = np.logspace(0, 4, 800)
     mag_loop, phase_loop = bode_data(loop, omega, unwrap_phase=True, wrap_phase=False)
-    fig, ax = plt.subplots(2, 1, figsize=(6.2, 6), sharex=True)
+    # Calculate margins for Loop with Lead
+    gm, pm, wcg, wcp = control.margin(loop)
+    
+    fig, ax = plt.subplots(2, 1, figsize=(6.2, 6.5), sharex=True)
     ax[0].semilogx(omega, mag_loop)
-    ax[0].axhline(0, color="k", linestyle=":")
+    ax[0].axhline(0, color="k", linestyle="-", linewidth=0.8)
+    
+    if gm > 0 and not math.isinf(gm):
+        gm_db = 20 * np.log10(gm)
+        mag_at_wcg = -gm_db
+        ax[0].scatter([wcg], [mag_at_wcg], color='r', marker='o', s=50, zorder=5)
+        ax[0].text(wcg, mag_at_wcg + 5, f"GM={gm_db:.1f} dB", color='r', fontsize=9, ha='center')
+    
+    ax[0].text(wcp, 0 + 2, "0 dB", color='g', fontsize=8, ha='center')
+    ax[0].scatter([wcp], [0], color='g', marker='o', s=50, zorder=5)
+
     ax[0].set_ylabel("Magnitude [dB]")
     ax[0].grid(True, which="both")
+    
     ax[1].semilogx(omega, phase_loop)
-    ax[1].axhline(-120, color="r", linestyle="--", label="Target Phase")
+    ax[1].axhline(-180, color='k', linestyle="-", linewidth=0.8)
+    
+    phase_at_wcp = -180 + pm
+    ax[1].scatter([wcp], [phase_at_wcp], color='g', marker='o', s=50, zorder=5)
+    ax[1].text(wcp, phase_at_wcp + 7, f"PM={pm:.1f} deg", color='g', fontsize=9, ha='center')
+    
+    if gm > 0:
+        ax[1].scatter([wcg], [-180], color='r', marker='o', s=50, zorder=5)
+
     ax[1].set_ylabel("Phase [deg]")
     ax[1].set_xlabel("Frequency [rad/s]")
     ax[1].grid(True, which="both")
+    
     fig.suptitle("Loop Return Ratio with Lead")
     fig.tight_layout()
     fig.savefig(path / "lrr_lead.png", dpi=200)
@@ -383,20 +493,36 @@ def simulate_compensators(gs, lead, path: Path):
         "Gol*LL": control.series(gs, lead_lag),
         "Gol*LLI": control.series(gs, lead_lag_int),
     }
+    
+    # Calculate margins for LLI
+    loop_lli = control.series(gs, lead_lag_int)
+    gm_lli, pm_lli, wcg_lli, wcp_lli = control.margin(loop_lli)
 
     omega = np.logspace(0, 4, 800)
-    fig, ax = plt.subplots(2, 1, figsize=(6.5, 6), sharex=True)
+    fig, ax = plt.subplots(2, 1, figsize=(7.0, 7.0), sharex=True)
     for label, sys in systems.items():
         mag, phase = bode_data(sys, omega, unwrap_phase=True, wrap_phase=False)
         ax[0].semilogx(omega, mag, label=label)
         ax[1].semilogx(omega, phase)
+    
     ax[0].set_ylabel("Magnitude [dB]")
     ax[0].grid(True, which="both")
-    ax[0].legend(fontsize="small")
+    ax[0].legend(fontsize="small", loc='lower left')
     ax[1].set_ylabel("Phase [deg]")
     ax[1].set_xlabel("Frequency [rad/s]")
     ax[1].grid(True, which="both")
-    fig.suptitle("Bode Plot Summary")
+    
+    # Mark LLI margins on the summary plot if feasible, or just leave clean "human" style
+    # User asked for "points you know". We can add them for LLI trace.
+    # LLI trace is "Gol*LLI"
+    # if gm_lli > 0 and not math.isinf(gm_lli):
+    #    gm_db = 20 * np.log10(gm_lli)
+    #    ax[0].plot([wcg_lli], [-gm_db], 'ro') # red dot
+    #    ax[1].plot([wcg_lli], [-180], 'ro')
+    # ax[0].plot([wcp_lli], [0], 'go') # green dot
+    # ax[1].plot([wcp_lli], [-180 + pm_lli], 'go')
+
+    fig.suptitle("Bode Summary")
     fig.tight_layout()
     fig.savefig(path / "bode_summary.png", dpi=200)
     plt.close(fig)
@@ -484,6 +610,7 @@ def main():
         unit_circle=True,
     )
     plot_bode_comparison(gs, gz, fig_dir)
+    plot_manual_zoh_vs_c2d(gs, fig_dir)
     plot_sampling_bodes(gs, [0.02, 0.002, 0.0002], fig_dir)
 
     mag, _, _ = control.freqresp(gz, np.array([60.0]))

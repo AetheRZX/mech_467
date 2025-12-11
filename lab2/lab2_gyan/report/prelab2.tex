@@ -1,0 +1,201 @@
+\documentclass[11pt]{article}
+\usepackage{amsmath,amssymb,siunitx,booktabs}
+\usepackage{geometry}
+\geometry{margin=1in}
+\sisetup{round-mode=places,round-precision=4}
+
+\title{MECH 467/541 Project 2 -- Prelab 2 (Phase 1)}
+\author{<Student Name> -- <Student Number>}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{System Summary}
+The open-loop path from the command voltage \(v_{in}(t)\) to the measured table position \(x_a(t)\) is built from the amplifier, torque constant, rigid rotor, and ballscrew encoder, while Coulomb friction, saturation, and disturbance torque are ignored for this phase.  With \(K_d = 1~\si{\milli\meter\per\volt}\) to capture the Beckhoff scaling, the numeric constants are listed in Table~\ref{tab:params}.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Quantity & Symbol & Value \\
+        \midrule
+        Amplifier gain & \(K_a\) & \(0.887~\si{\ampere\per\volt}\) \\
+        Torque constant & \(K_t\) & \(0.72~\si{\newton\meter\per\ampere}\) \\
+        Encoder gain & \(K_e\) & \(\dfrac{20}{2\pi}=3.1831~\si{\milli\meter\per\radian}\) \\
+        Inertia & \(J_e\) & \(7\times10^{-4}~\si{\kilogram\meter\squared}\) \\
+        Viscous friction & \(B_e\) & \(0.00612~\si{\newton\meter\per(\radian/\second)}\) \\
+        Sample time & \(T_s\) & \(2\times10^{-4}~\si{\second}\) \\
+        Ballscrew pitch & \(h_p\) & \(20~\si{\milli\meter}\) \\
+        \bottomrule
+    \end{tabular}
+    \caption{Given machine constants for the Beckhoff-driven ballscrew axis.}
+    \label{tab:params}
+\end{table}
+
+\section{Prelab 1 -- Discrete Transfer Function Derivation}
+\subsection{Continuous open-loop model}
+Applying the cascade in Fig.~1 of the handout gives the continuous plant
+\begin{align}
+    J_e \dot{\omega}(t) + B_e \omega(t) &= K_t K_a\, v_{in}(t), \label{eq:rot_dynamics} \\
+    \dot{x}_a(t) &= K_e\, \omega(t), \label{eq:kinematics}
+\end{align}
+so the Laplace-domain transfer function is
+\begin{equation}
+    G_{ol}(s) \equiv \frac{X_a(s)}{V_{in}(s)}
+      = \frac{K_d K_a K_t K_e}{s(J_e s + B_e)}
+      = \frac{2.0329}{s(7\times10^{-4}s + 0.00612)}. \label{eq:G_s}
+\end{equation}
+Partial-fraction decomposition of \eqref{eq:G_s} (Black's formula) yields
+\begin{equation}
+    G_{ol}(s) = \frac{K_d K_a K_t K_e}{B_e}
+    \left(\frac{1}{s} - \frac{1}{s + \frac{B_e}{J_e}}\right),
+    \label{eq:partial_fraction}
+\end{equation}
+which explicitly separates the integrator from the viscously damped pole.
+
+\subsection{Zero-order-hold derivation}
+Let the states be \(x_1=\omega\) and \(x_2=x_a\); with \(\lambda \equiv B_e/J_e = 8.7429~\si{\per\second}\) the continuous dynamics become
+\begin{equation}
+    \dot{\mathbf{x}} = 
+    \underbrace{\begin{bmatrix}-\lambda & 0 \\ K_e & 0 \end{bmatrix}}_{A_c}\mathbf{x} +
+    \underbrace{\begin{bmatrix} \dfrac{K_a K_t}{J_e} \\ 0 \end{bmatrix}}_{B_c} v_{in}, \qquad
+    y = \underbrace{\begin{bmatrix}0 & 1\end{bmatrix}}_{C_c}\mathbf{x}. \label{eq:ssc}
+\end{equation}
+Solving \eqref{eq:ssc} over one sample with a zero-order hold gives the discrete updates
+\begin{align}
+    \omega[k\!+\!1] &= \mathrm{e}^{-\lambda T_s} \omega[k] 
+    + \frac{K_a K_t}{B_e}\bigl(1-\mathrm{e}^{-\lambda T_s}\bigr) v_{in}[k], \label{eq:omega_disc} \\
+    x_a[k\!+\!1] &= x_a[k] + \frac{K_e}{\lambda}\bigl(1-\mathrm{e}^{-\lambda T_s}\bigr)\omega[k] \nonumber \\
+                 &\qquad + \frac{K_a K_t K_e}{B_e}
+                 \left(T_s - \frac{1-\mathrm{e}^{-\lambda T_s}}{\lambda}\right)v_{in}[k], \label{eq:xa_disc}
+\end{align}
+which correspond to the closed-form matrices
+\begin{equation}
+    A_d = \begin{bmatrix}
+        \phi & 0 \\
+        \dfrac{K_e}{\lambda}(1-\phi) & 1
+    \end{bmatrix}, \quad
+    B_d = \begin{bmatrix}
+        \dfrac{K_a K_t}{B_e}(1-\phi) \\
+        \dfrac{K_a K_t K_e}{B_e}
+        \left(T_s - \dfrac{1-\phi}{\lambda}\right)
+    \end{bmatrix}, \quad
+    \phi \equiv \mathrm{e}^{-\lambda T_s}.
+    \label{eq:AdBd}
+\end{equation}
+Carrying out the algebra \(G_{ol}(z) = C_d (zI - A_d)^{-1} B_d\) leads to
+\begin{equation}
+    G_{ol}(z) = 
+    \frac{\beta_1 z + \beta_0}{z^2 - (1+\phi)z + \phi},
+    \qquad
+    \beta_1 = \frac{K_a K_t K_e}{B_e}\left(T_s - \frac{1-\phi}{\lambda}\right), \,
+    \beta_0 = \frac{K_e}{\lambda}(1-\phi)\frac{K_a K_t}{B_e}(1-\phi) - \phi \beta_1.
+    \label{eq:Gz_symbolic}
+\end{equation}
+Substituting the numeric parameters produces
+\begin{equation}
+    G_{ol}(z) = \frac{5.8048\times 10^{-5}\, z + 5.8014\times 10^{-5}}
+    {z^2 - 1.998252956\, z + 0.998252956}.
+    \label{eq:Gz_numeric}
+\end{equation}
+
+\subsection{Comparison with MATLAB}
+The MATLAB script \texttt{phase1\_prelab.m} implements the same discretization through both the analytical formulas \eqref{eq:AdBd}--\eqref{eq:Gz_symbolic} and the built-in \texttt{c2d} command.  Table~\ref{tab:c2d} confirms that the coefficients match to numerical precision (\(<1.1\times 10^{-16}\)).
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+        Coefficient & Manual ZOH & MATLAB \texttt{c2d} \\
+        \midrule
+        \(b_1\) (units mm/V) & \(5.80477117505705\times 10^{-5}\) & \(5.80477117506742\times 10^{-5}\) \\
+        \(b_0\) (units mm/V) & \(5.80138880862634\times 10^{-5}\) & \(5.80138880861596\times 10^{-5}\) \\
+        Denominator \(z^1\) term & \(-1.99825295643180\) & \(-1.99825295643180\) \\
+        Denominator \(z^0\) term & \(0.99825295643180\) & \(0.99825295643180\) \\
+        \bottomrule
+    \end{tabular}
+    \caption{Numerical equality between the manual ZOH derivation and \texttt{c2d}.}
+    \label{tab:c2d}
+\end{table}
+
+\section{Prelab 2 -- State-Space Model and Step Response}
+\subsection{Continuous and discrete state-space models}
+Equations \eqref{eq:ssc} already define the continuous-time state matrices
+\[
+    A_c = \begin{bmatrix}-8.7429 & 0 \\ 3.1831 & 0\end{bmatrix}, \quad
+    B_c = \begin{bmatrix} 912.343 \\ 0 \end{bmatrix}, \quad
+    C_c = \begin{bmatrix}0 & 1\end{bmatrix}, \quad D_c = 0.
+\]
+Using the closed-form expressions in \eqref{eq:AdBd}, the discrete model sampled at \(T_s = 2\times10^{-4}~\si{\second}\) becomes
+\begin{equation}
+    A_d = \begin{bmatrix}
+        0.9982529564 & 0 \\
+        6.3606\times 10^{-4} & 1
+    \end{bmatrix}, \qquad
+    B_d = \begin{bmatrix}
+        1.8230913\times 10^{-1} \\
+        5.8047712\times 10^{-5}
+    \end{bmatrix}, \qquad
+    C_d = C_c, \quad D_d = 0.
+    \label{eq:discrete_ss}
+\end{equation}
+The matrix-exponential check inside \texttt{phase1\_prelab.m} verifies that these hand-derived matrices match the numerical \texttt{expm} result to machine precision (\(<10^{-12}\)).
+
+\subsection{Open-loop step response}
+Both the discrete transfer function \eqref{eq:Gz_numeric} and the discrete state-space model \eqref{eq:discrete_ss} were driven by a \(1~\si{\volt}\) step over \(0.02~\si{\second}\).  As expected for a type-I plant, the response is a ramp (no finite steady state).  The maximum absolute difference between the two simulated trajectories was \(7.6\times 10^{-14}~\si{\milli\meter}\), i.e., numerical noise only.  The peak displacement at \(20~\si{\milli\second}\) is \(0.5484~\si{\milli\meter}\) for both models; traditional rise/settling metrics are undefined because of the inherent integrator.
+
+\section{Prelab 3 -- Stability Analysis}
+\subsection{Closed-loop characteristic equations}
+Closing the loop with a proportional gain \(K_p\) (units \(\si{\volt\per\milli\meter}\)) produces the continuous characteristic polynomial
+\begin{equation}
+    J_e s^2 + B_e s + K_p K_d K_a K_t K_e = 0,
+    \label{eq:char_cont}
+\end{equation}
+whose coefficients remain positive for \(K_p > 0\); hence both poles stay in the left half-plane and the root locus simply migrates away from the origin (one pole starts at \(s=0\), the other at \(s=-B_e/J_e\)).  In discrete time the closed-loop denominator becomes
+\begin{equation}
+    D(z) + K_p N(z) = z^2 - (1+\phi)z + \phi + K_p \bigl( \beta_1 z + \beta_0 \bigr) = 0,
+    \label{eq:char_disc}
+\end{equation}
+with the coefficients defined in \eqref{eq:Gz_symbolic}.  Because \(N(z)\) adds a finite-delay zero, the discrete root locus wraps around the unit circle; the sample data stored in \texttt{results.rlocus} show the discrete poles leaving the unit circle once \(K_p\) exceeds roughly \(600\), while the continuous poles remain damped conjugates for all \(K_p>0\).
+
+\subsection{Frequency-response margins}
+Using the open-loop models,
+\[
+    GM_s = \infty, \quad PM_s = 9.28^\circ \text{ at } \omega_{cp} = 53.53~\si{\radian\per\second},
+\]
+so the continuous system can tolerate arbitrarily large gain because the integrator ensures \(0~\si{\decibel}\) never occurs at a finite phase crossover.  The discrete plant has finite margins due to the sample-and-hold delay:
+\[
+    GM_z = 30.11~(\approx 29.6~\si{\decibel}), \quad
+    PM_z = 8.97^\circ \text{ at } \omega_{cp} = 53.54~\si{\radian\per\second}.
+\]
+Varying the sample time illustrates how faster sampling improves robustness; Table~\ref{tab:ts_sweep} summarizes the zero-order-hold gain margins from the MATLAB sweep.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{@{}ccc@{}}
+        \toprule
+        \(T_s\) [s] & Gain margin & Phase margin [deg] \\
+        \midrule
+        \(2.0\times 10^{-2}\) & \(0.310\) & \(-20.30\) \\
+        \(2.0\times 10^{-3}\) & \(3.020\) & \(6.21\) \\
+        \(2.0\times 10^{-4}\) & \(30.11\) & \(8.97\) \\
+        \bottomrule
+    \end{tabular}
+    \caption{Discrete gain/phase margins versus sampling period.}
+    \label{tab:ts_sweep}
+\end{table}
+The coarse sample (\(T_s=20~\si{\milli\second}\)) effectively destabilizes the loop (negative phase margin), while the Beckhoff sampling rate used in the lab restores positive phase and a comfortable gain margin.  Therefore, stability in the \(s\) and \(z\) domains is not automatically equivalent; sufficient sampling speed is required to keep discrete poles inside the unit circle even though the underlying continuous dynamics are stable for any positive \(K_p\).
+
+\section*{Saved MATLAB artefacts}
+Running \texttt{phase1\_prelab.m} generates the file \texttt{results/phase1\_data.mat} containing:
+\begin{itemize}
+    \item Continuous and discrete numerator/denominator coefficients.
+    \item The analytic \(A_d, B_d\) matrices and verification data.
+    \item Step-response time histories and comparison metrics.
+    \item Root-locus pole sweeps for both domains.
+    \item Frequency-response margins versus sample time.
+\end{itemize}
+These records will be reused in Phase~2 (Simulink controller design) so that the report only needs to include plots/reference tables generated from a single source of truth.
+
+\end{document}

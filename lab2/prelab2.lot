@@ -1,5 +1,6 @@
-\contentsline {table}{\numberline {1}{\ignorespaces Gain and phase margins for different models (MATLAB \texttt {bode}/\texttt {margin}).}}{7}{table.caption.7}%
-\contentsline {table}{\numberline {2}{\ignorespaces Effect of Coulomb friction on the digital P-controlled step response ($\text {sat}=\pm 3\nobreakspace {}\si {A}$).}}{11}{table.caption.11}%
-\contentsline {table}{\numberline {3}{\ignorespaces Effect of the amplifier saturation limit on the step response ($\mu _k=0.3\nobreakspace {}\si {Nm}$).}}{12}{table.caption.13}%
-\contentsline {table}{\numberline {4}{\ignorespaces Loop stability margins after compensation.}}{15}{table.caption.17}%
-\contentsline {table}{\numberline {5}{\ignorespaces Summary of controller implementations carried into Simulink.}}{16}{table.caption.18}%
+\contentsline {table}{\numberline {1}{\ignorespaces Gain and phase margins for different models (MATLAB \texttt {bode}/\texttt {margin}).}}{8}{table.caption.8}%
+\contentsline {table}{\numberline {2}{\ignorespaces Gain margins at various sampling times}}{9}{table.caption.10}%
+\contentsline {table}{\numberline {3}{\ignorespaces Effect of Coulomb friction on the digital P-controlled step response ($\text {sat}=\pm 3~\si {A}$).}}{12}{table.caption.13}%
+\contentsline {table}{\numberline {4}{\ignorespaces Effect of the amplifier saturation limit on the step response ($\mu _k=0.3~\si {Nm}$).}}{13}{table.caption.15}%
+\contentsline {table}{\numberline {5}{\ignorespaces Loop stability margins after compensation.}}{17}{table.caption.19}%
+\contentsline {table}{\numberline {6}{\ignorespaces Summary of controller implementations carried into Simulink.}}{18}{table.caption.20}%

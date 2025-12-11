@@ -1,14 +1,15 @@
 \contentsline {figure}{\numberline {1}{\ignorespaces Analyzed System from Project Handout}}{1}{figure.caption.1}%
 \contentsline {figure}{\numberline {2}{\ignorespaces Output from MATLAB c2d}}{2}{figure.caption.2}%
-\contentsline {figure}{\numberline {3}{\ignorespaces Unit-step comparison between the discrete transfer function and discrete state-space model.}}{4}{figure.caption.3}%
-\contentsline {figure}{\numberline {4}{\ignorespaces Bode magnitude and phase comparison between $G_\text {ol}(z)$ and the discrete state-space realization.}}{5}{figure.caption.4}%
-\contentsline {figure}{\numberline {5}{\ignorespaces Continuous (left) and discrete (right) root-locus plots for the proportional loop $K_p G_\text {ol}$.}}{6}{figure.caption.5}%
-\contentsline {figure}{\numberline {6}{\ignorespaces Bode comparison between $G_\text {ol}(s)$ and $G_\text {ol}(z)$ with $T=0.2\nobreakspace {}\text {ms}$.}}{7}{figure.caption.6}%
-\contentsline {figure}{\numberline {7}{\ignorespaces Discrete Bode magnitudes versus sampling time.}}{8}{figure.caption.8}%
-\contentsline {figure}{\numberline {8}{\ignorespaces Bode diagram of the discrete loop $K_p G_\text {ol}(z)$ showing the unity-gain crossing at \SI {60}{rad/s} and a $7.9^\circ $ phase margin.}}{10}{figure.caption.9}%
-\contentsline {figure}{\numberline {9}{\ignorespaces Simulink block diagram used for the digital P-controller with Coulomb friction and actuator saturation.}}{10}{figure.caption.10}%
-\contentsline {figure}{\numberline {10}{\ignorespaces Step response of the discrete P loop for several Coulomb friction levels ($\text {sat}=\pm 3\nobreakspace {}\si {A}$).}}{11}{figure.caption.12}%
-\contentsline {figure}{\numberline {11}{\ignorespaces Step response of the discrete P loop for several actuator current limits ($\mu _k = 0.3\nobreakspace {}\si {Nm}$).}}{12}{figure.caption.14}%
-\contentsline {figure}{\numberline {12}{\ignorespaces Loop return ratio after inserting the lead compensator. The open loop satisfies the $0\nobreakspace {}\text {dB}$ crossing and $60^\circ $ phase-margin targets at $\omega _c=377\nobreakspace {}\si {rad/s}$.}}{14}{figure.caption.15}%
-\contentsline {figure}{\numberline {13}{\ignorespaces Reference tracking in the presence of a constant friction disturbance: lead-only versus lead-plus-integral controllers for both step (top) and ramp (bottom) inputs.}}{15}{figure.caption.16}%
-\contentsline {figure}{\numberline {14}{\ignorespaces Magnitude and phase of $G_\text {ol}(s)$, $C_\text {LL}(s)$, $C_\text {LLI}(s)$, and the combined open-loop transfer functions.}}{17}{figure.caption.19}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Section 2.2: Manual $G_{ol}(z)$ vs MATLAB \texttt {c2d} Bode plot.}}{3}{figure.caption.3}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Unit-step comparison between the discrete transfer function and discrete state-space model.}}{5}{figure.caption.4}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Bode magnitude and phase comparison between $G_\text {ol}(z)$ and the discrete state-space realization.}}{5}{figure.caption.5}%
+\contentsline {figure}{\numberline {6}{\ignorespaces Continuous (left) and discrete (right) root-locus plots for the proportional loop $K_p G_\text {ol}$.}}{7}{figure.caption.6}%
+\contentsline {figure}{\numberline {7}{\ignorespaces Bode comparison between $G_\text {ol}(s)$ and $G_\text {ol}(z)$ with $T=0.2~\text {ms}$.}}{8}{figure.caption.7}%
+\contentsline {figure}{\numberline {8}{\ignorespaces Discrete Bode magnitudes versus sampling time.}}{9}{figure.caption.9}%
+\contentsline {figure}{\numberline {9}{\ignorespaces Bode diagram of the discrete loop $K_p G_\text {ol}(z)$ showing the unity-gain crossing at \SI {60}{rad/s}. Margins: Gm = 8.16 dB at 295.6 rad/s, Pm = 7.90 deg at 60.0 rad/s.}}{11}{figure.caption.11}%
+\contentsline {figure}{\numberline {10}{\ignorespaces Simulink block diagram used for the digital P-controller with Coulomb friction and actuator saturation.}}{12}{figure.caption.12}%
+\contentsline {figure}{\numberline {11}{\ignorespaces Step response of the discrete P loop for several Coulomb friction levels ($\text {sat}=\pm 3~\si {A}$).}}{13}{figure.caption.14}%
+\contentsline {figure}{\numberline {12}{\ignorespaces Step response of the discrete P loop for several actuator current limits ($\mu _k = 0.3~\si {Nm}$).}}{14}{figure.caption.16}%
+\contentsline {figure}{\numberline {13}{\ignorespaces Loop return ratio after inserting the lead compensator. Margins shown in plot title.}}{15}{figure.caption.17}%
+\contentsline {figure}{\numberline {14}{\ignorespaces Reference tracking comparisons.}}{17}{figure.caption.18}%
+\contentsline {figure}{\numberline {15}{\ignorespaces Magnitude and phase of $G_\text {ol}(s)$, $C_\text {LL}(s)$, $C_\text {LLI}(s)$, and the combined open-loop transfer functions.}}{19}{figure.caption.21}%

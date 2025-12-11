@@ -1,0 +1,186 @@
+MECH 467/541 – Computer Control of Mechatronics Systems 
+Prof. Y. Altintas, altintas@mech.ubc.ca 
+The University of British Columbia, Department of Mechanical Engineering 
+Project 2:  Digital Control of Motion Actuators 
+This project focuses on the design of control algorithms that deliver the desired performance 
+characteristics of the ball -screw driven table identified in Project I. The performance characteristics are 
+evaluated according to the response s peed, accuracy, and robustness of the actuators operating under 
+computer control. In this lab you will practice designing controllers and evaluate their ability to achieve 
+the specified requirements of the ball-screw driven table. 
+Risks Associated with This Experiment 
+Category Task Hazard / Harm Controls 
+Lifting & Handling - - - 
+Pinch points and rotating 
+equipment 
+Moving the ball -
+screw table 
+Pinch finger Only move the table using the 
+controller (do not move manually).  
+The safety plexiglass box must be 
+mounted on the table 
+Dust, chips, airborne - - - 
+Electrical - - - 
+Vibration - - - 
+Noise - - - 
+Chemicals - - - 
+Safe disposal - - - 
+Slips, trips, falls - - - 
+Working alone - - - 
+Ergonomics - - - 
+Other - - - 
+Residual risk considerations: 
+N/A 
+Pre Lab 
+This pre-lab must be completed and submitted to the TA before the lab. The pre -lab constitutes 50% of 
+your final grade for this lab, and you will not be allowed to perform the lab without completing it. The 
+pre-lab can be neatly handwritten or typed but the step response and frequency response plots must be 
+printed out or presented on your computer to the TA. 
+1. Discrete Transfer Function Derivation: The first step in designing a digital controller for the 
+drive is to convert the open loop transfer function identified in Lab1 from continuous domain (s-
+domain) to discrete domain (z-domain). Based on the model identification carried out in the first 
+project, the block diagram of the open position loop is depicted in Figure 1. Manually obtain the 
+zero-order hold equivalent of the open loop transfer function (G ol(z)) in terms of system 
+parameters. Plug in the parameter values in the final result,  and compare your result with the 
+zero order hold transfer function obtained by Matlab’s c2d command. Ignore the Coulomb friction 
+and saturation blocks. 
+Note: Use Ka=0.887 [A/V], Kt=0.72 [Nm/A], Je=7 X10-4 [Kgm
+2
+], Be= 0.00612 [Nm/rad/s],  Ke= 20/2π 
+[mm/rad], and sampling time of T= 0.0002 [s] in your calculations.  Kd =1 [mm/V] since the DAQ scaling 
+is already done by the special equipment ( Beckhoff) we are using in the laboratory. Pitch of the 
+ballscrew is hp=20 [mm]. 
+ 
+Figure 1 : Open loop Block Diagram of Ball Screw Feed Drive System  
+2. State Space Model 
+Obtain the discrete time state space model of the machine shown in Figure 1. Simulate the step 
+response of the system using the discrete state space model of the machine given in Figure 1. Compare 
+the results obtained from discrete transfer function and state space models. 
+3. Stability Analysis:  
+By ignoring the Coulomb friction and saturation limits (i.e. nonlinearities), 
+a. Assume that the position control loop is closed by a proportional controller with a gain K p 
+[V/mm]. By plotting the root locus of the drive  Gol(s) in s -plane and G ol(z) in z -plane (using 
+MATLAB), observe how the closed -loop poles of the system change as the gain K p increases 
+from zero to infinity. Derive the basic expressions manually (only for continuous system). 
+b.  Find the phase and gain margins of Gol(s) and Gol(z) using Matlab's bode command. Comment 
+on the stability of the closed-loop systems described in s and z domains. 
+c. Discussion: Is stability in continuous and discrete domain s always equivalent? Why?  Using 
+MATLAB, find the gain margin of Gol(z) for three different sampling time of 0. 02, 0.002, and 
+0.0002. Which one is more stable? What do you conclude? 
+ 
+4. P-Controller Design:  
+Using the bode plot of the discrete system Gol(z), find a proportional gain Kp such that the unity gain cross 
+over frequency in z domain is 60 rad/s.  Include the basic expressions for the procedure of calculating K p 
+(you can use MATLAB for extracting the values of magnitude and phase). 
+ 
+
+Based on the block diagram in Figure 1, create  a Simulink model for the closed -loop system with P -
+Controller by including zero order hold. Include the Coulomb friction and Saturation blocks. Use the 
+Coulomb friction model derived in Lab 1 with μk = 0.3 [Nm]. The limits for the Saturation block are ±3 [A]. 
+Obtain the step response of the closed loop digital control system with and without the friction model.  
+Comment on the effect of Coulomb friction on the overshoot, rise time, and settling time of step response. 
+How does the saturation block affect the overshoot, rise time, and settling time? (Try different values of 
+saturation limit between 0.5-3 [A]) 
+ 
+5. Lead – Lag Compensator  Design:   
+The controller structure is given as,  
+1() 1
+TsC s K Ts
++= +
+ 
+where gain K and parameters α, T  are the parameters of the compensator which needs to be designed. 
+a. Using the bode plot of the discrete system G ol(z), d esign the compensator to achieve 60 
+degrees phase margin at gain cross over frequency of 
+60 377 rad/sc Hz == .  Include the 
+basic expressions for the procedure of lead-lag design (you can use MATLAB for extracting the 
+values of magnitude and phase). Plot the frequency response of the open loop system by 
+including the compensator, and show that the design criteria is met. 
+b. Cascade an integral ac tion (
+iKs
+s
++ ) to the lead lag compensator with a gain 
+/10icK =
+(note: 
+c  must be in rad/s). Simulate the step and ramp input response with friction 
+disturbance again, and show the effect of integral action on the steady state error. Compare 
+the results with and without integral controller.  
+Note: Once you finish designing the controller in s -domain, you must transform it to discrete 
+domain before implementing it in your Simulink. Since the ZOH blo ck is already implemented in 
+MATLAB, for discretizing controller, use c2d(Gcont,Ts,’tustin’) so the ZOH effect is not considered 
+twice. 
+ 
+6. Discussion 
+On the same bode diagram, plot the magnitude and phase of the following transfer functions: Gol(s), LL(s), 
+LLI(s), G ol(s)*LL(s), G ol(s)*LLI(s). (LL: lead -lag, LLI: lead -lag-integrator). Comment on how the lead -lag 
+compensator and the integrator affect the magnitude and phase. Also comment qualitatively on how DC 
+gain and gain cross over frequency affect steady state error and rise time. 
+Note:  
+➢ In obtaining frequency response functions, make sure to exclude the Coulomb friction and 
+saturation limits. Frequency response functions are linear functions and cannot include such 
+nonlinear elements. 
+➢ To plot your Simulink scope results in Matlab you need to first load your scope data into the 
+workspace. You can do this by double clicking on the Scope icon in the simulink file→ click on 
+→choose the Data history tab → check the Save data to workspace box (if it is not 
+checked)→ change the variable name to your desired name , and “structure with 
+time”→Apply→Ok. Make sure to uncheck the box which limits the stored data to the last 
+5000 data points. 
+Experimental Tasks: 
+A. Measurements 
+The ballscrew parameters are already loaded in the TwinCAT model. P lug in your designed controller 
+paramaters in the model and run the machine to obtain the response to step (1mm) and ramp (10mm/s) 
+inputs for each of the three controllers you designed. 
+B. Analysis 
+For each controller (P, LL, LLI) and for each input (step/ramp), compare the 1) experimental results and 2) 
+your Simulink results. When comparing corresponding results, plot them on top of each other in one 
+graph. Also use subplots to avoid having too many individual figures in your report. To aid your analysis 
+address the following questions: 
+Comparison of Experiments and Simulation 
+ 
+1) Find the rise times and over shoots of the experimental step responses. Tabulate this data along 
+with the rise time and over shoot of your simu lated responses. How do the two compare? How 
+are they similar and how are they different? Discuss possible sources of discrepancy that could be 
+leading to differences in the step responses 
+ 
+2) Find the steady state errors of the experimental ramp responses. T abulate this data along with 
+steady state error of your simulated response. How do the two compare? How are they similar 
+and how are they different? Discuss possible sources of discrepancy that could be leading to 
+differences in the ramp responses. 
+Comparison of Controllers 
+ 
+3) In comparing the proportional controller to the lead -lag controller, how does an increased 
+bandwidth affect the performance with regards to rise time of the step response and steady state 
+error of the ramp response? What is the reason for this difference? 
+ 
+4) Why is it not possible to design a lead lag compensator with a very large bandwidth? What factors 
+limit the system? Assume the system has no delay from the zero order hold, is it still possible to 
+design a lead lag compensator with infinitely large bandwidth? 
+
+ 
+5) What benefits does the integrator provide? Prove this idea mathematically using the error 
+transfer function with the integrator and final value theorem. 
+ 
+6) Why does the integrator cause an overshoot?  How would you reduce this affect? What is the 
+trade off? 
+ 
+7) Though it seems the lead -lag integrator out performs the lead -lag and proportional controller 
+there may be scenarios where the latter are preferred. Discuss these possible scenarios. 
+ 
+Please make your discussions very brief (2-3 lines per question). 
+Report Requirements: 
+The report must be typed and orderly. It accounts for 50% of your lab grade. Poorly presented reports will 
+not be accepted. Equations may be handwritten into the report, but they must be written very neatly and 
+numbered.  Please be as concise as possible. Do not provide unnecessary information. Credit will however 
+be given for concise comments which demonstrate a good understanding of the material covered in the 
+lab. 
+The following are required of you. 
+1. Title Page: Your name, student ID, email, etc 
+2. Abstract:  3-4 lines describing the objective of the laboratory as you understand it.  
+3. Introduction: Describe the role of control design in industry and the layout of your report 
+(maximum 5 to 6 lines) 
+4. Body: In this part you need to  present your analyses and discussions . Make sure to read the 
+handout thoroughly and answer all the discussion questions. Other useful comments are welcome 
+(as long as they are concise).  
+5. Conclusion: Explain what you have understood from the lab (5-8 lines). 
+6. Appendix: MATLAB scripts and Simulink block diagram. 
+ 
+ 
+ 

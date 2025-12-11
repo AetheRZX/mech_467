@@ -1,0 +1,203 @@
+\documentclass[12pt]{article}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{pdfpages}
+\usepackage{cleveref}
+
+% --- Header/Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\newcommand{\coursenum}{MECH 467}
+\newcommand{\labnum}{Project II Report}
+\newcommand{\labtitle}{Digital Control of a Ball-Screw Feed Drive}
+\newcommand{\studentname}{Ryan Edric Nashota}
+\newcommand{\studentid}{33508219}
+\lhead{\sffamily \labnum}
+\chead{\sffamily \labtitle}
+\rhead{\sffamily \studentname}
+\renewcommand{\headrulewidth}{0.4pt}
+\cfoot{\sffamily \thepage}
+
+% --- Formatting ---
+\captionsetup{font=small, labelfont=bf, skip=6pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.8em}
+\graphicspath{{figures/}}
+
+\begin{document}
+
+% --- Title Page ---
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\huge\bfseries \coursenum: \labtitle \par}
+    \vspace{1cm}
+    {\Large \labnum \par}
+    \vspace{2cm}
+    {\Large \textbf{\studentname} \\ ID: \studentid \par}
+    \vspace{1cm}
+    {\large \today \par}
+    \vfill
+\end{titlepage}
+
+\section{Abstract}
+This laboratory project focused on the design and implementation of digital controllers for a ball-screw feed drive. A Proportional (P), Lead-Lag, and Lead-Lag-Integrator controller were designed in the frequency domain to meet specific bandwidth and phase margin requirements. Experimental results confirmed that the Proportional controller provided basic tracking, the Lead-Lag compensator improved bandwidth and rise time, and the Lead-Lag-Integrator eliminated steady-state errors, albeit with increased overshoot.
+
+\section{Introduction}
+Control design is critical in industrial positioning systems to ensure accuracy, speed, and disturbance rejection. In this report, we analyze the performance of three digital control strategies applied to a ball-screw mechanism. We compare experimental step and ramp responses against Simulink simulations to validate our models and discuss the trade-offs between bandwidth, stability margins, and steady-state accuracy.
+
+\section{Analysis -- Plotting Experimental \& Simulated Results}
+The following plots show the experimental and Simulink results for each input and for each controller. The step response input was 1 mm, and the ramp input was 10 mm/s.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{compare_P_Controller.png}
+    \caption{P Controller Experimental \& Simulation Responses}
+    \label{fig:p_resp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{compare_LeadLag.png}
+    \caption{Lead Compensator Controller Experimental \& Simulation Responses}
+    \label{fig:ll_resp}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.85\linewidth]{compare_LeadLagIntegrator.png}
+    \caption{Lead Lag Compensator + Integral Controller Experimental \& Simulation Responses}
+    \label{fig:lli_resp}
+\end{figure}
+
+As observed, the measured and experimental results align well. Some discrepancies exist, particularly with the P controller step input showing some overshoot overshoot and offsets, which likely stems from unmodeled non-linear friction effects in the real system.
+
+\section{Comparison of Experiments \& Simulation}
+
+\subsection{Rise Times \& Overshoot \%}
+The table below compares the measured and simulated rise times and overshoot percentages. These values were calculated using logic similar to MATLAB's \texttt{stepinfo} function.
+
+\begin{table}[H]
+    \centering
+    \caption{Simulated \& Experimental Rise Times \& Overshoot}
+    \label{tab:step_metrics}
+    \begin{tabular}{lcccc}
+        \toprule
+        Controller & Exp Rise Time (s) & Sim Rise Time (s) & Exp Overshoot (\%) & Sim Overshoot (\%) \\
+        \midrule
+        Kp & 0.0277 & 0.0274 & 14.89 & 9.20 \\
+        LL & 0.0104 & 0.0345 & 0.82 & 0.00 \\
+        LLI & 0.0084 & 0.0116 & 34.83 & 23.56 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Most experimental and simulated values are within the same order of magnitude, indicating valid models. However, the simulated rise time for the LL controller is noticeably larger than the experimental result. Additionally, the experimental overshoot for LLI is higher than simulated. Factors contributing to these differences include the friction model (we used a theoretical estimate which differs from the physical system) and unmodeled non-linearities or dynamics in the real hardware.
+
+\subsection{Steady-State Error}
+The table below compares the steady-state errors for the ramp responses.
+
+\begin{table}[H]
+    \centering
+    \caption{Steady-State Errors for Measured \& Simulated Ramp Responses}
+    \label{tab:ramp_metrics}
+    \begin{tabular}{lcc}
+        \toprule
+        Controller & Measured Error (mm) & Simulated Error (mm) \\
+        \midrule
+        Kp & 0.2450 & 0.3871 \\
+        LL & 0.0519 & 0.0381 \\
+        LLI & 0.0082 & 0.0016 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The values align reasonably well. The trend clearly shows that the Proportional controller has the highest error, which is reduced by the Lead-Lag compensator, and properly eliminated (to near zero) by the Integrator. The discrepancy in the Kp controller error (simulated being higher) suggests that the actual system gain or friction damping differs from the model parameters.
+
+\section{Comparison of Controllers}
+
+\begin{enumerate}
+    \item \textbf{1.1 How does an increased bandwidth affect the performance with regards to rise time of the step response and steady-state error of the ramp response for a Kp Controller?}
+    
+    Increasing the bandwidth results in a faster system response, leading to a decreased rise time. Simultaneously, since bandwidth in a P-controller is linked to higher gain ($K_p$), the steady-state error for a ramp input is reduced as bandwidth increases.
+
+    \item \textbf{1.2 How does an increased bandwidth affect the performance with regards to rise time of the step response and steady-state error of the ramp response for a Lead Controller?}
+    
+    A lead controller increases the phase margin and effectively boosts the system's bandwidth, which reduces the rise time. However, unlike a simple gain increase, the lead compensator primarily affects transient response; the steady-state error typically remains similar unless the low-frequency gain is explicitly increased or an integrator is added.
+
+    \item \textbf{1.3 What is the reason for this difference?}
+    
+    The difference lies in the controller structure. For a proportional controller, increasing bandwidth (via $K_p$) directly increases the loop gain at all frequencies, reducing error. A lead compensator, however, boosts gain primarily at higher frequencies (to add phase) and effectively decouples the bandwidth improvement from the DC gain, meaning steady-state performance is not necessarily improved by bandwidth expansion alone.
+
+    \item \textbf{2.1 Why is it not possible to design a lead-lag compensator with large bandwidth?}
+    
+    A lead-lag compensator with extremely large bandwidth implies the system must respond to very high-frequency signals. This is physically impossible because it would require the actuator to move mechanical mass with infinite acceleration and force.
+
+    \item \textbf{2.2 What factors limit the system?}
+    
+    Physical constraints such as actuator saturation (voltage/current limits), mechanical inertia ($J_e$), and sampling time ($T_s$) of the digital controller limit the achievable bandwidth. Additionally, sensor noise at high frequencies can be amplified, causing instability.
+
+    \item \textbf{2.3 Assuming no ZOH delay, is it still possible to design a lead compensator with an infinite bandwidth?}
+    
+    No. Even without ZOH delay, the physical system inertia means that infinite bandwidth would require infinite power and force to move the mass instantaneously, which is physically impossible.
+
+    \item \textbf{3.1 What benefits does the integrator provide?}
+    
+    The integrator adds a pole at the origin, which increases the system type. This strictly eliminates steady-state error for step inputs and significantly reduces (or eliminates, depending on system type) error for ramp inputs, as seen in the results.
+
+    \item \textbf{3.2 Provide this idea mathematically using the error transfer function and final value theorem.}
+    
+    The steady-state error is given by $e_{ss} = \lim_{s \to 0} s E(s) = \lim_{s \to 0} s \frac{R(s)}{1 + C(s)G(s)}$. For a ramp input $R(s) = 1/s^2$, if $C(s)$ contains an integrator ($1/s$), the denominator term $C(s)G(s)$ goes to infinity as $s \to 0$, causing $E(s)$ to approach zero (or a finite constant specific to the system type), whereas without integration, the error remains finite and large.
+
+    \item \textbf{4.1 Why does the integrator cause an overshoot?}
+    
+    The integrator accumulates error over time. During the rising phase, the accumulated error drives the control signal high. When the target is reached, the "stored" integral action is still present and requires time to discharge (integrate negative error), causing the system to drive past the setpoint before returning.
+
+    \item \textbf{4.2 How would you reduce this affect?}
+    
+    Overshoot can be reduced by lowering the integral gain ($K_i$), which slows the accumulation of error. Alternatively, adding a derivative term (D) or increasing phase lead can add damping to counteract the momentum caused by the integrator.
+
+    \item \textbf{4.3 What is the trade-off?}
+    
+    Reducing $K_i$ to lower overshoot typically slows down the settling time and the rejection of steady-state disturbances. Adding derivative action can increase susceptibility to high-frequency noise.
+
+    \item \textbf{5.1 Discuss possible scenarios where a Kp controller would be preferred over a lead integrator compensator.}
+    
+    A simple Kp controller might be preferred when:
+    \begin{itemize}
+        \item The system is subject to significant actuator saturation; an integrator would suffer from windup, causing worse performance.
+        \item The signal is noisy; integrators and derivative terms can amplify noise or cause erratic behavior, while P-control is simpler and more robust.
+        \item Rapid settling time is more critical than zero steady-state error.
+        \item Computational complexity must be minimized (though less relevant for modern microcontrollers).
+    \end{itemize}
+\end{enumerate}
+
+\section{Conclusion}
+This laboratory experiment successfully demonstrated the design and evaluation of digital control algorithms for a ball-screw feed drive. We compared Proportional, Lead-Lag, and Lead-Lag-Integrator controllers through mathematical modeling, simulation, and experimental validation.
+
+The results highlighted the trade-offs inherent in control design:
+\begin{itemize}
+    \item The \textbf{Proportional Controller} provided a baseline stable response but suffered from significant steady-state error in ramp tracking.
+    \item The \textbf{Lead-Lag Compensator} successfully increased bandwidth and reduced rise time without compromising stability, decoupling speed from DC gain.
+    \item The \textbf{Lead-Lag-Integrator} eliminated steady-state error, validating the theoretical benefit of increasing system type, but at the cost of increased overshoot and settling time due to the integral windup effect.
+\end{itemize}
+
+Discrepancies between simulation and experiment, particularly in the P-controller's steady-state error and the Lead-Lag rise time, underscored the influence of unmodeled dynamics such as non-linear Coulomb friction and sensor quantization. Calibrating the model with experimental identification provided a closer match, but perfect agreement is limited by these physical non-linearities. Ultimately, this project confirmed that while simulation is a powerful design tool, experimental tuning is essential to account for physical constraints like saturation and friction.
+
+\appendix
+\section{MATLAB/Python Scripts}
+(See attached files for generation scripts).
+
+\includepdf[pages=-, scale=0.9, pagecommand={}]{../prelab2.pdf}
+
+\end{document}
