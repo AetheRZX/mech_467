@@ -9,7 +9,7 @@ from pathlib import Path
 # --- System Parameters (Same as generate_figures.py) ---
 KA = 0.887
 KT = 0.72
-JE = 7e-4
+JE = 2.0e-4 # Tuned from 7e-4 to match experimental rise time (Exp is much faster)
 BE = 0.00612
 KE = 20 / (2 * math.pi)
 T_S = 0.0002  # 0.2 ms
@@ -42,7 +42,7 @@ def get_controllers(Gz):
     
     return C_P, C_LL, C_LLI
 
-def load_data(path):
+def load_data(path, trim_threshold=0.01):
     # Header at line 7 (0-indexed) means row 7 is header.
     # Data units at line 8.
     # Real data starts after.
@@ -102,9 +102,38 @@ def load_data(path):
         data = data.dropna()
         data['Time'] = data['Time'] / 1000.0  # ms -> s
         
-        # Shift time to start at 0
+        # Trim data to start when Act > threshold
         if len(data) > 0:
-            data['Time'] = data['Time'] - data['Time'].iloc[0]
+            # Simple trim: first time where Act > threshold
+            # Normalized to reference if step? But data is usually 0 then steps.
+            # Ramp starts at 0.
+            
+            # Find start index
+            # Look for point where Act changes significantly (> 1% of expected max)
+            # Or just use the time where Ref starts changing?
+            # User said "trim it... sometimes there is a period where it is constant around 0".
+            
+            # Let's try finding where Ref > 0 (for Step/Ramp)
+            # If Ref is available and reliable
+            start_mask = np.abs(data['Ref']) > 0.001
+            if np.any(start_mask):
+                start_idx = np.where(start_mask)[0][0]
+                # Backtrack a bit to capture the rise?
+                # Usually t=0 is when Ref steps.
+                # Shift time so that this point is t=0
+                t_start = data['Time'].iloc[start_idx]
+                data['Time'] = data['Time'] - t_start
+                # Filter out negative times? Or keep a small pre-buffer
+                # data = data[data['Time'] >= -0.1] 
+                # But plotting starts at 0 in my script.
+                # So shifting is key.
+            else:
+                # Fallback to Act if Ref is bad
+                start_mask = np.abs(data['Act']) > trim_threshold
+                if np.any(start_mask):
+                    start_idx = np.where(start_mask)[0][0]
+                    t_start = data['Time'].iloc[start_idx]
+                    data['Time'] = data['Time'] - t_start
             
         return data
     except Exception as e:
@@ -220,30 +249,146 @@ def calculate_ramp_metrics(t_exp, y_exp, t_sim, y_sim, slope=10): # Report says 
         
     return err_exp, err_sim
 
+# --- Non-linear Simulation ---
+
 def simulate_system(controller_name, input_type, t_vec):
-    gs, gz = get_plant()
-    cp, cll, clli = get_controllers(gz)
-
-    sys_cl = None
-    if controller_name == 'P':
-        sys_cl = control.feedback(cp * gz, 1)
-    elif controller_name == 'LeadLag':
-        sys_cl = control.feedback(cll * gz, 1)
-    elif controller_name == 'LeadLagIntegrator':
-        sys_cl = control.feedback(clli * gz, 1)
-    else:
-        raise ValueError(f"Unknown controller name: {controller_name}")
-
-    r_vec = None
-    if input_type == 'step':
-        r_vec = np.ones_like(t_vec) * 1.0
-    elif input_type == 'ramp':
-        r_vec = 10.0 * t_vec # Assuming 10 mm/s ramp
-    else:
-        raise ValueError(f"Unknown input type: {input_type}")
-
-    t_out, y_out = control.forced_response(sys_cl, T=t_vec, U=r_vec)
-    return t_out, y_out
+    # Parameters
+    # Reverting Je closer to original? 
+    # User said P oscillation is bad. Original Je=7e-4 damped it more? No, larger J -> Lower omega_n, Lower zeta? 
+    # zeta = B / 2 sqrt(J K). Larger J -> Smaller zeta -> MORE oscillation.
+    # So Smaller J -> Larger zeta -> LESS oscillation.
+    # But I used 2e-4 (Small J) and got oscillation. That's contradictory to standard 2nd order theory unless K is scaling?
+    # Open loop K = Ka Kt Ke / (J s^2 + B s).
+    # CL Char Eq: s^2 + (B/J) s + (K_total / J) = 0.
+    # 2 zeta wn = B/J. 
+    # So zeta = (B/J) / (2 wn) = (B/J) / (2 sqrt(K_tot/J)) = B / (2 sqrt(K_tot J)).
+    # So Smaller J -> Larger zeta.
+    # Why did I see oscillation?
+    # Maybe discrete time delay? Or high gain margins?
+    # Regardless, friction is the key damper.
+    
+    # Let's use an intermediate Je or keep 2e-4 if it matches rise time.
+    # But user said "simulated term might be wrong".
+    # Let's try to match Bobsy's parameters if possible.
+    # Bobsy used Je=7e-4 in text.
+    # I'll stick to Je=7e-4 but rely on FRICTION to damp it.
+    
+    # Local Parameters in case we change them just for simulation
+    # Reverting to 7e-4 (Bobsy's value) and lowering friction to match ramp error.
+    _JE = 7e-4 
+    _BE = 0.00612
+    _KA = 0.887
+    _KT = 0.72
+    _KE = 20 / (2 * math.pi)
+    _T_S = 0.0002
+    
+    # Friction
+    # User says Bobsy's simulation had no overshoot. This requires higher friction ~0.4-0.5.
+    MU_K = 0.4 # Nm
+    # Saturation
+    REF_MAX_I = 3.0 # A
+    
+    # Controllers
+    # P
+    KP = 1.253
+    
+    # LL
+    # (155.5 z - 152.3) / (z - 0.763)
+    # u[k] = 0.763 u[k-1] + 155.5 e[k] - 152.3 e[k-1]
+    LL_num = [155.5, -152.3]
+    LL_den = [1.0, -0.763]
+    
+    # LLI
+    # (156.1 z^2 - 307.8 z + 151.7) / (z^2 - 1.763 z + 0.763)
+    # u[k] = 1.763 u[k-1] - 0.763 u[k-2] + 156.1 e[k] - 307.8 e[k-1] + 151.7 e[k-2]
+    LLI_num = [156.1, -307.8, 151.7]
+    LLI_den = [1.0, -1.763, 0.763]
+    
+    # Simulation State
+    omega = 0.0
+    theta = 0.0 # x_a
+    
+    # Controller State
+    e_prev = [0.0, 0.0] # e[k-1], e[k-2]
+    u_prev = [0.0, 0.0] # u[k-1], u[k-2]
+    
+    y_out = []
+    
+    for t in t_vec:
+        # 1. Reference
+        if input_type == 'step':
+            r = 1.0 # mm
+        else:
+            r = 10.0 * t # mm
+            
+        # 2. Measurement
+        y_meas = theta # With quantization? Ignoring for now.
+        
+        # 3. Error
+        e = r - y_meas
+        
+        # 4. Control
+        u_val = 0.0
+        if controller_name == 'P':
+            u_val = KP * e
+        elif controller_name == 'LeadLag':
+            # u[k] = -a1 u[k-1] + b0 e[k] + b1 e[k-1]
+            # den = [1, -0.763] -> a1 = -0.763
+            # num = [155.5, -152.3]
+            u_val = -LL_den[1]*u_prev[0] + LL_num[0]*e + LL_num[1]*e_prev[0]
+        elif controller_name == 'LeadLagIntegrator':
+            # u[k] = -a1 u[k-1] - a2 u[k-2] + b0 e[k] + b1 e[k-1] + b2 e[k-2]
+            # den = [1, -1.763, 0.763]
+            u_val = -LLI_den[1]*u_prev[0] - LLI_den[2]*u_prev[1] + \
+                    LLI_num[0]*e + LLI_num[1]*e_prev[0] + LLI_num[2]*e_prev[1]
+                    
+        # Update Controller Memory
+        e_prev = [e, e_prev[0]]
+        u_prev = [u_val, u_prev[0]]
+        
+        # 5. Saturation (Current Limiting)
+        # Controller output u_val is usually Voltage (V) unless specified otherwise.
+        # Lab says "Kp = [V/mm]". So u is Volts.
+        # Amplifier: I = Ka * V
+        I_cmd = _KA * u_val
+        
+        # Clamp Current
+        if I_cmd > REF_MAX_I:
+            I = REF_MAX_I
+        elif I_cmd < -REF_MAX_I:
+            I = -REF_MAX_I
+        else:
+            I = I_cmd
+            
+        # 6. Torque
+        Tm = _KT * I
+        
+        # 7. Friction
+        # Simple Coulomb friction model
+        # If velocity is zero (or close), friction matches torque up to Mu
+        # Else friction is Mu * sign(omega)
+        
+        T_net = 0.0
+        if abs(omega) < 1e-4: # Stiction region
+            if abs(Tm) < MU_K:
+                T_net = 0.0 # Stuck
+                omega = 0.0 # Force zero
+            else:
+                T_net = Tm - MU_K * np.sign(Tm) # Breakaway
+        else:
+            T_net = Tm - MU_K * np.sign(omega)
+            
+        # 8. Dynamics Update (Euler)
+        # J w_dot + B w = T_net
+        # w_dot = (T_net - B w) / J
+        
+        w_dot = (T_net - _BE * omega) / _JE
+        omega = omega + w_dot * _T_S
+        theta = theta + _KE * omega * _T_S
+        
+        y_out.append(theta)
+        
+    return t_vec, np.array(y_out)
 
 
 def main():

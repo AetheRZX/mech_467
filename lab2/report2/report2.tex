@@ -1,4 +1,5 @@
 \documentclass[12pt]{article}
+% --- Page geometry & core packages ---
 \usepackage{geometry}
 \geometry{margin=1in}
 \usepackage{graphicx}
@@ -8,18 +9,72 @@
 \usepackage{float}
 \usepackage{amsmath}
 \usepackage[hidelinks]{hyperref}
-\usepackage{caption}
-\usepackage{titlesec}
-\usepackage{fancyhdr}
-\usepackage{pdfpages}
-\usepackage{cleveref}
+\usepackage{multirow}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+% --- Fonts & microtypography (Times-like) ---
+\usepackage{newtxtext,newtxmath}
+\usepackage{microtype}
+% --- In your preamble (once) ---
+\usepackage{listings}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.85]{beramono}
+\usepackage{newunicodechar}
+\newunicodechar{μ}{\ensuremath{\mu}}
 
-% --- Header/Footer ---
+\lstdefinestyle{pycode}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  numbers=left,
+  numberstyle=\scriptsize\color{black!50},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{black!20},
+  showstringspaces=false,
+  breaklines=true,
+  columns=fullflexible,
+  tabsize=4,
+  literate={
+    {→}{{$\to$}}1
+    {←}{{$\leftarrow$}}1
+    {·}{{$\cdot$}}1
+    {×}{{$\times$}}1
+    {–}{{-}}1
+    {—}{{-}}1
+    {−}{{-}}1
+    {≥}{{$\ge$}}1
+    {≤}{{$\le$}}1
+    {°}{{$^\circ$}}1
+    {Ω}{{$\Omega$}}1
+    {µ}{{$\mu$}}1
+  }
+}
+\lstset{style=pycode}
+% --- Captions ---
+\usepackage{caption}
+\captionsetup{
+  font=small,
+  labelfont=bf,
+  labelsep=period,
+  justification=centering,
+  singlelinecheck=false,
+  skip=6pt
+}
+\captionsetup[table]{position=top}
+% --- Section headings ---
+\usepackage{titlesec}
+\titleformat{\section}{\Large\sffamily\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\sffamily\bfseries}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.2ex plus .3ex}{0.6ex}
+\titlespacing*{\subsection}{0pt}{1.0ex plus .2ex}{0.4ex}
+% --- Header / footer ---
+\usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
 \newcommand{\coursenum}{MECH 467}
 \newcommand{\labnum}{Project II Report}
-\newcommand{\labtitle}{Digital Control of a Ball-Screw Feed Drive}
+\newcommand{\labtitle}{Digital Control of the Ball-Screw Feed Drive}
 \newcommand{\studentname}{Ryan Edric Nashota}
 \newcommand{\studentid}{33508219}
 \lhead{\sffamily \labnum}
@@ -27,12 +82,35 @@
 \rhead{\sffamily \studentname}
 \renewcommand{\headrulewidth}{0.4pt}
 \cfoot{\sffamily \thepage}
+\setlength{\headheight}{15pt}
+\addtolength{\topmargin}{-3pt}
+\usepackage{titlesec}
+\titleformat{\paragraph}[block]{\normalfont\normalsize\bfseries}{}{}{}
+\titlespacing*{\paragraph}{0pt}{0.8ex}{0.6ex}
+% --- Cleveref ---
+\usepackage[nameinlink,noabbrev]{cleveref}
+\Crefname{figure}{Figure}{Figures}
+\Crefname{table}{Table}{Tables}
+\Crefname{equation}{Equation}{Equations}
+\Crefname{section}{Section}{Sections}
+\crefname{figure}{figure}{figures}
+\crefname{table}{table}{tables}
+\crefname{equation}{equation}{equations}
+\crefname{section}{section}{sections}
+\newtcolorbox{infobox}[1][]{colback=blue!5,colframe=cyan!60!black,title=#1,boxrule=0.6pt}
+% --- siunitx custom units ---
+\DeclareSIUnit{\lbf}{lbf}
+\DeclareSIUnit{\inch}{in}
+\DeclareSIUnit{\lbfin}{lb\,in}
+% --- URL tweaks ---
+\usepackage{url}
+\def\UrlBreaks{\do\_\do\-}
+\newcommand{\code}[1]{\texttt{\nolinkurl{#1}}}
+\emergencystretch=2em
 
-% --- Formatting ---
-\captionsetup{font=small, labelfont=bf, skip=6pt}
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{0.8em}
-\graphicspath{{figures/}}
+% --- Graphics path ---
+% Combining paths from both
+\graphicspath{{figures/}{../figures/}{../analysis_outputs/figures/}}
 
 \begin{document}
 
@@ -53,8 +131,505 @@
 \section{Abstract}
 This laboratory project focused on the design and implementation of digital controllers for a ball-screw feed drive. A Proportional (P), Lead-Lag, and Lead-Lag-Integrator controller were designed in the frequency domain to meet specific bandwidth and phase margin requirements. Experimental results confirmed that the Proportional controller provided basic tracking, the Lead-Lag compensator improved bandwidth and rise time, and the Lead-Lag-Integrator eliminated steady-state errors, albeit with increased overshoot.
 
-\section{Introduction}
-Control design is critical in industrial positioning systems to ensure accuracy, speed, and disturbance rejection. In this report, we analyze the performance of three digital control strategies applied to a ball-screw mechanism. We compare experimental step and ramp responses against Simulink simulations to validate our models and discuss the trade-offs between bandwidth, stability margins, and steady-state accuracy.
+\section{System Analyzed}
+The open-loop model from the Project~II handout removes the Coulomb friction and saturation elements and collapses the amplifier, torque constant, inertia, damping, and encoder dynamics into a single continuous-time transfer function.  Using the provided parameters ($K_a=0.887~\si{A/V}$, $K_t=0.72~\si{Nm/A}$, $J_e=7\times10^{-4}~\si{kgm^2}$, $B_e=0.00612~\si{Nms/rad}$, $K_e=20/(2\pi)~\si{mm/rad}$, $K_d=1$) the open-loop gain is
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{system_analyzed.png}
+  \caption{Analyzed System from Project Handout}
+  \label{fig:analyzed_system}
+\end{figure}
+\begin{equation}
+  G_\text{ol}(s) = \frac{K_a K_t K_e}{s(J_e s + B_e)}
+  = \frac{2.0329}{0.0007 s^2 + 0.00612 s}.
+  \label{eq:plant}
+\end{equation}
+The pole at the origin reflects displacement integration while the real pole at $-B_e/J_e=-8.743~\si{rad/s}$ captures the motor--ball-screw mechanical time constant.  The subsequent sections translate this model into discrete form and design digital controllers that satisfy the pre-lab deliverables.
+
+\section{Prelab 1 -- Discrete Transfer Function Derivation}
+\label{sec:q1}
+\begin{infobox}[Q1 Deliverables]
+  \begin{itemize}
+    \item Manually obtain the zero-order hold equivalent of the open loop transfer function ($G_{ol}(z)$) in terms of system parameters.
+    \item Plug in the parameter values in the final result, and compare your result with the zero order hold transfer function obtained by Matlab's c2d command.
+    \item Ignore the Coulomb friction and saturation blocks.
+  \end{itemize}
+\end{infobox}
+\subsection{Zero-Order Hold Derivation}
+The partial-fraction decomposition of \Cref{eq:plant} is
+\begin{equation}
+  G_\text{ol}(s) = \frac{332.166}{s} - \frac{37.993}{0.11438\,s + 1}
+  = \frac{332.166}{s} - \frac{37.993}{s + 8.7429}.
+  \label{eq:partial_frac}
+\end{equation}
+Applying the standard ZOH expressions
+\begin{align}
+  \mathcal{Z}\left\{\frac{1}{s}\right\} &= \frac{T z^{-1}}{1 - z^{-1}},\\
+  \mathcal{Z}\left\{\frac{1}{s + a}\right\} &= \frac{(1 - e^{-aT}) z^{-1}}{1 - e^{-aT} z^{-1}},
+\end{align}
+with $T=0.0002~\si{s}$ yields the zero-order-hold equivalent
+\begin{equation}
+  G_\text{ol}(z) = \frac{332.166\,T z^{-1}}{1 - z^{-1}}
+    - \frac{37.993 (1 - e^{-8.7429 T}) z^{-1}}{1 - e^{-8.7429 T} z^{-1}}.
+  \label{eq:zoh_symbolic}
+\end{equation}
+Substituting the numerical constants and simplifying gives
+\begin{equation}
+  G_\text{ol}(z) = \frac{5.8048\times10^{-5} z + 5.8014\times10^{-5}}
+                        {z^2 - 1.99825296 z + 0.99825296}.
+  \label{eq:zoh_numeric}
+\end{equation}
+
+\subsection{Comparison with MATLAB \texttt{c2d}}
+Equation~\eqref{eq:zoh_numeric} matches the discrete transfer function reported by \texttt{c2d(G\_ol,~0.0002,~'zoh')} in MATLAB to all significant digits.  The numerator and denominator coefficients from MATLAB
+are shown in \Cref{fig:c2d_matlab}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{c2d.png}
+  \caption{Output from MATLAB c2d}
+  \label{fig:c2d_matlab}
+\end{figure}
+which confirms the manual derivation in \Cref{eq:partial_frac}--\eqref{eq:zoh_numeric}.
+
+\subsection{Comparison of Manual G(z) vs MATLAB c2d}
+As requested, a comparison between the manually derived discrete transfer function (plotted from the analytical expression in \Cref{eq:zoh_numeric}) and the MATLAB/Python-generated \texttt{c2d} model is shown in \Cref{fig:bode_manual_vs_c2d}. The perfect overlap confirms the accuracy of the manual ZOH derivation.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{bode_manual_vs_c2d.png}
+  \caption{Section 2.2: Manual $G_{ol}(z)$ vs MATLAB \texttt{c2d} Bode plot.}
+  \label{fig:bode_manual_vs_c2d}
+\end{figure}
+
+\section{Prelab 2 -- State Space Model}
+\label{sec:q2}
+\begin{infobox}[Q2 Deliverables]
+  \begin{itemize}
+    \item Obtain the discrete time state space model of the machine shown in Figure 1.
+    \item Simulate the step response of the system using the discrete state space model of the machine given in Figure 1.
+    \item Compare the results obtained from discrete transfer function and state space models.
+  \end{itemize}
+\end{infobox}
+\subsection{State and Input Selection}
+The plant contains two energy-storing elements: the inertia that integrates torque into angular velocity, and the ballscrew that integrates angular rate into position.  Selecting the state vector and inputs as
+\begin{equation}
+  x = \begin{bmatrix}\omega \\ x_a\end{bmatrix},\qquad
+  u = \begin{bmatrix} v_\text{in} \\ T_d \end{bmatrix},\qquad
+  y = x_a,
+  \label{eq:ss_definitions}
+\end{equation}
+keeps the model physically meaningful while allowing a disturbance torque $T_d$ to be injected explicitly.
+
+\subsection{Continuous-Time Derivation}
+The torque balance on the rotor/ball screw assembly is
+\begin{equation}
+  J_e \dot{\omega} + B_e \omega = K_a K_t v_\text{in} - T_d,
+  \label{eq:ss_torque_balance}
+\end{equation}
+which leads to the state equation for $\dot{\omega}$:
+\begin{equation}
+  \dot{\omega} = -\frac{B_e}{J_e}\omega + \frac{K_a K_t}{J_e} v_\text{in} - \frac{1}{J_e} T_d.
+  \label{eq:ss_omega}
+\end{equation}
+The carriage position is the integral of angular rate scaled by the pitch $K_e$, so
+\begin{equation}
+  \dot{x}_a = K_e \omega.
+  \label{eq:ss_position}
+\end{equation}
+Equations~\eqref{eq:ss_omega}--\eqref{eq:ss_position} can be collected into the standard state-space form
+\begin{equation}
+  \dot{x} =
+  \underbrace{\begin{bmatrix}
+    -B_e/J_e & 0 \\
+    K_e      & 0
+  \end{bmatrix}}_{A}
+  x +
+  \underbrace{\begin{bmatrix}
+    K_a K_t/J_e & -1/J_e \\
+    0           & 0
+  \end{bmatrix}}_{B}
+  u,
+  \qquad
+  y =
+  \underbrace{\begin{bmatrix}0 & 1\end{bmatrix}}_{C} x,
+  \quad
+  D = \begin{bmatrix}0 & 0\end{bmatrix}.
+  \label{eq:ss_continuous}
+\end{equation}
+This representation matches the block diagram: the $A$ matrix embeds the motor time constant and the kinematic integrator, the $B$ matrix shows how the amplifier and disturbance torques enter the dynamics, and the output equation simply reports the second state.
+
+\subsection{Discrete-Time Realization}
+Applying a zero-order hold with $T=0.0002~\si{s}$ produces the discrete model
+\begin{align}
+  x[k+1] &=
+  \underbrace{\begin{bmatrix}
+    0.998252956 & 0\\
+    6.3606\times10^{-4} & 1
+  \end{bmatrix}}_{A_d} x[k] +
+  \underbrace{\begin{bmatrix}
+    0.182309 & -0.285465\\[2pt]
+    5.8048\times10^{-5} & -9.0893\times10^{-5}
+  \end{bmatrix}}_{B_d} u[k], \label{eq:ss_discrete}\\
+  y[k] &= \begin{bmatrix}0 & 1\end{bmatrix} x[k], \qquad
+  D_d = \begin{bmatrix}0 & 0\end{bmatrix}. \nonumber
+\end{align}
+The discrete state model and the transfer function in \Cref{eq:zoh_numeric} produce the same unit-step response, as shown in \Cref{fig:step_compare}.  Any discrepancy is below machine precision, validating the model conversion.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{step_compare.png}
+  \caption{Unit-step comparison between the discrete transfer function and discrete state-space model.}
+  \label{fig:step_compare}
+\end{figure}
+
+Consistency in the frequency domain is shown in \Cref{fig:bode_model_compare}.  The magnitude and phase of the discrete transfer function overlap the discrete state-space model throughout the frequency range of interest, demonstrating that both representations stem from the same pole-zero set.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.78\linewidth]{bode_model_compare.png}
+  \caption{Bode magnitude and phase comparison between $G_\text{ol}(z)$ and the discrete state-space realization.}
+  \label{fig:bode_model_compare}
+\end{figure}
+
+
+\section{Prelab 3 -- Stability Analysis}
+\label{sec:q3a}
+\begin{infobox}[Q3(a) Deliverables]
+  \begin{itemize}
+    \item Assume that the position control loop is closed by a proportional controller with a gain $K_p$ [V/mm].
+    \item By plotting the root locus of the drive $G_{ol}(s)$ in s-plane and $G_{ol}(z)$ in z-plane (using MATLAB), observe how the closed-loop poles of the system change as the gain $K_p$ increases from zero to infinity.
+    \item Derive the basic expressions manually (only for continuous system).
+  \end{itemize}
+\end{infobox}
+\subsection{Root Locus in $s$ and $z$ Domains}
+Using the closed loop transfer from \Cref{eq:plant}, and adding a proportional term, we arrive with the equation:
+\begin{align}
+  G_{cl}(s) = \frac{K_p G_{ol}(s)}{1 + K_p G_{ol}(s)}
+\end{align}
+The characteristic equation is $1 + K_p G_{ol}(s) = 0$. Substituting $G_{ol}(s) = \frac{2.0329}{0.0007s^2 + 0.00612s}$:
+\begin{align}
+1 + K_p \frac{2.0329}{0.0007s^2 + 0.00612s} &= 0 \\
+0.0007s^2 + 0.00612s + 2.0329 K_p &= 0 \\
+s^2 + \frac{0.00612}{0.0007}s + \frac{2.0329}{0.0007}K_p &= 0 \\
+s^2 + 8.743s + 2904.1 K_p &= 0
+\end{align}
+The closed loop poles are the roots of this quadratic equation:
+\begin{equation}
+s_{1,2} = \frac{-8.743 \pm \sqrt{8.743^2 - 4(1)(2904.1 K_p)}}{2} = -4.37 \pm \sqrt{19.11 - 2904.1 K_p}
+\end{equation}
+For $K_p > 0.0065$, the term under the square root becomes negative, resulting in complex conjugate poles with a constant real part of $-4.37$, indicating stability for all positive $K_p$ in the continuous domain (as typical for a second-order system).
+We can then trace out the value of our poles as we change the value of our proportional control as seen in 
+\Cref{fig:rl_pair}.
+
+
+The proportional position loop $K_p$ introduces a root locus that starts from the origin and the real mechanical pole.  The continuous locus in the left panel of \Cref{fig:rl_pair} shows that increasing $K_p$ pushes one pole deeper into the left half-plane while the other moves toward the right half-plane, crossing into instability once $K_p \approx 5.4~\si{V/mm}$.  The discrete root locus in the right panel mirrors this motion with critical crossings at $\lvert z\rvert=1$.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.45\linewidth]{root_locus_continuous.png}\hfill
+  \includegraphics[width=0.45\linewidth]{root_locus_discrete.png}
+  \caption{Continuous (left) and discrete (right) root-locus plots for the proportional loop $K_p G_\text{ol}$.}
+  \label{fig:rl_pair}
+\end{figure}
+
+\begin{infobox}[Q3(b) Deliverables]
+  \begin{itemize}
+    \item Find the phase and gain margins of $G_{ol}(s)$ and $G_{ol}(z)$ using Matlab's bode command.
+    \item Comment on the stability of the closed-loop systems described in s and z domains.
+  \end{itemize}
+\end{infobox}
+\subsection{Gain and Phase Margins}
+The open-loop frequency responses for the continuous and discrete models appear in \Cref{fig:bode_compare}.  Table~\ref{tab:margins} summarises the stability margins obtained from MATLAB's \texttt{margin} command (replicated with the Python Control Systems toolbox).  The continuous plant never crosses $0~\si{dB}$, so the gain margin is effectively infinite, but the phase margin is only $9.27^\circ$, signalling a lightly damped closed-loop response.  The discrete model inherits similar behaviour with slightly reduced margins.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\linewidth]{bode_compare.png}
+  \caption{Bode comparison between $G_\text{ol}(s)$ and $G_\text{ol}(z)$ with $T=0.2~\text{ms}$.}
+  \label{fig:bode_compare}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \caption{Gain and phase margins for different models (MATLAB \texttt{bode}/\texttt{margin}).}
+  \label{tab:margins}
+  \begin{tabular}{lcccc}
+    \toprule
+    Model & Gain Margin & Phase Margin & $\omega_{cg}$ [rad/s] & $\omega_{cp}$ [rad/s]\\
+    \midrule
+    $G_\text{ol}(s)$ & $>10^6$ (no crossing) & $9.27^\circ$ & -- & 53.54\\
+    $G_\text{ol}(z)$, $T=0.2~\text{ms}$ & $30.1$ & $8.97^\circ$ & 295.64 & 53.54\\
+    $G_\text{ol}(z)$, $T=2~\text{ms}$ & $3.02$ & $6.21^\circ$ & 93.37 & 53.52\\
+    $G_\text{ol}(z)$, $T=20~\text{ms}$ & $0.31$ & $-20.3^\circ$ & 29.15 & 52.17\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{infobox}[Q3(c) Deliverables]
+  \begin{itemize}
+    \item Discussion: Is stability in continuous and discrete domains always equivalent? Why?
+    \item Using MATLAB, find the gain margin of $G_{ol}(z)$ for three different sampling time of 0.02, 0.002, and 0.0002.
+    \item Which one is more stable? What do you conclude?
+  \end{itemize}
+\end{infobox}
+\subsection{Sampling-Time Influence}
+\Cref{fig:bode_sampling} overlays the discrete Bode magnitudes for three sampling times.  
+
+As seen in the previous table, in continous domain our system is always stable. But for discrete systems,
+higher $K_p$ values can cause a system to be unstable. Another factor is what we are currently seeing in the graph,
+where, as sampling time $T$ increase, the ZOH adds more delay and thus the magnitude starts to ripple and the phase lag
+grows until the nyquist frequency. That added lag is what causes the poles to be pushed to the unstable region. 
+Coarser sampling ($T=20~\text{ms}$) amplifies high-frequency gain and erodes the phase margin, rendering the loop unstable even before gains are added.  Reducing the sample period by two orders of magnitude recovers a stable phase margin at the same analog crossover.  Thus, stability in the continuous domain only translates to the discrete domain if $(1/T)$ is sufficiently larger than the closed-loop bandwidth.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{bode_sampling.png}
+  \caption{Discrete Bode magnitudes versus sampling time.}
+  \label{fig:bode_sampling}
+\end{figure}
+
+\subsection{Stability in Continuous vs Discrete Domains}
+The stability in continuous and discrete domains is not always equivalent. If the sampling period of the discrete system is too large—meaning the sampling frequency is too small—the discrete model cannot accurately represent the continuous real system, resulting in discrepancies. In general, the higher the sampling frequency, the closer we are to the true continuous system, and thus the higher gain margin and bandwidth stability. We can see this is the case by testing the three sampling times; the gain margins, for the three sampling times, are as follows:
+
+\begin{table}[H]
+  \centering
+  \caption{Gain margins at various sampling times}
+  \label{tab:gm_sampling}
+  \begin{tabular}{ll}
+    \toprule
+    Sampling Time [s] & Gain Margin [dB] \\
+    \midrule
+    $0.02$ & $0.31$ (Unstable/Low) \\
+    $0.002$ & $9.71$ \\
+    $0.0002$ & $29.69$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+As we expect, the smallest sampling time produces the highest gain margin, which implies the highest bandwidth for stability. The infinite gain margin of the continuous domain means our system is theoretically always stable, which in real application is limited by the sampling time, as observed in the limited value of discrete domain gain margin.
+
+\section{Prelab 4 -- P-Controller Design}
+\label{sec:q4}
+\begin{infobox}[Q4 Deliverables]
+  \begin{itemize}
+    \item Using the bode plot of the discrete system $G_{ol}(z)$, find a proportional gain $K_p$ such that the unity gain cross over frequency in z domain is 60 rad/s.
+    \item Include the basic expressions for the procedure of calculating $K_p$.
+    \item Obtain the step response with and without the friction model.
+    \item Comment on the effect of Coulomb friction on the overshoot, rise time, and settling time.
+    \item How does the saturation block affect the overshoot, rise time, and settling time? (Try different values between 0.5-3 A).
+  \end{itemize}
+\end{infobox}
+
+\subsection{Gain Selection from the Discrete Bode Plot}
+The handout specifies that the discrete plant $G_\text{ol}(z)$ be driven to unity magnitude at $\omega=60~\si{rad/s}$.  Using the discrete Bode magnitude of $G_\text{ol}(e^{j\omega T})$ in \Cref{fig:bode_compare}, the gain at $\omega=60~\si{rad/s}$ is $-1.96~\si{dB}$ (i.e.\ $|G|=0.7983$).  Enforcing the unity-gain requirement gives
+\begin{equation}
+  1 = K_p \bigl\lvert G_\text{ol}(e^{j\omega T}) \bigr\rvert\big|_{\omega=60}
+  \quad\Longrightarrow\quad
+  K_p = \frac{1}{0.7983} = 1.253~\si{V/mm}.
+  \label{eq:kp_spec}
+\end{equation}
+The phase of $G_\text{ol}(e^{j \omega T})$ at this frequency is $-172.1^\circ$, so the loop acquires only $7.9^\circ$ of phase margin when closed with a P-controller.  This agrees with MATLAB's \texttt{margin} calculation on $G_\text{ol}(z)$ and motivates the more elaborate compensator of \Cref{sec:q5}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.78\linewidth]{pcontroller_bode.png}
+  \caption{Bode diagram of the discrete loop $K_p G_\text{ol}(z)$ showing the unity-gain crossing at \SI{60}{rad/s}. Margins: Gm = 8.16 dB at 295.6 rad/s, Pm = 7.90 deg at 60.0 rad/s.}
+  \label{fig:pcontroller_bode}
+\end{figure}
+
+\subsection{Implementation with Friction and Saturation}
+The Simulink model mirrors Figure~1 of the handout: the measured encoder position is held in a zero-order hold before it is fed back to the summer, the digital controller is implemented with the sampling time $T=0.2~\text{ms}$, and the plant includes a torque saturation block ($\pm 3~\si{A}$) and a Coulomb friction block parameterised by $\mu_k=0.3~\si{Nm}$ from Lab~1.  The trajectories in \Cref{fig:pcontroller_friction,fig:pcontroller_saturation} were generated with a discrete-time simulation that matches the Simulink topology; step inputs were applied while either friction or current limits were varied in isolation.  A faithful recreation of the Simulink implementation is provided in \Cref{fig:q4_simulink} to document the exact signal routing.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.78\linewidth]{simulink_P_control.png}
+  \caption{Simulink block diagram used for the digital P-controller with Coulomb friction and actuator saturation.}
+  \label{fig:q4_simulink}
+\end{figure}
+
+Table~\ref{tab:friction_metrics} lists the overshoot, $10$--$90\%$ rise time, and steady-state position for four friction levels.  Higher Coulomb friction reduces overshoot by opposing motion, but it also produces steady-state offsets ($x_\infty$ departs from \SI{1}{mm}) because the P-loop contains no integral action.  The severe \SI{0.5}{Nm} case never reaches the 90\% threshold, so a rise time is not defined and the response monotonically approaches only \SI{0.68}{mm}.  None of the runs reaches the \(\pm 2\%\) settling band within \SI{80}{ms} because of the friction-induced steady-state error, so the settling time is effectively infinite for this controller.
+
+\begin{table}[H]
+  \centering
+  \caption{Effect of coulomb friction on the digital P-controlled step response ($\text{sat}=\pm 3~\si{A}$).}
+  \label{tab:friction_metrics}
+  \begin{tabular}{cccc}
+    \toprule
+    $\mu_k$ [Nm] & Overshoot [\%] & $t_r$ [ms] & $x_\infty$ [mm]\\
+    \midrule
+    0.0 & 79.6 & 17.9 & 0.975 \\
+    0.1 & 57.1 & 19.7 & 1.110 \\
+    0.3 & 12.3 & 26.6 & 1.120 \\
+    0.5 & 0.0 & \textemdash & 0.680 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The trajectories used to compute these statistics are plotted in \Cref{fig:pcontroller_friction}, which makes the friction-dependent damping of the transient explicit.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.78\linewidth]{pcontroller_friction_steps.png}
+  \caption{Step response of the discrete P loop for several Coulomb friction levels ($\text{sat}=\pm 3~\si{A}$).}
+  \label{fig:pcontroller_friction}
+\end{figure}
+
+The saturation sweep in Table~\ref{tab:sat_metrics} highlights that limiting the current mainly slows the transient.  The nominal $\pm 3~\si{A}$ case reaches the reference in roughly \SI{26.6}{ms} with \SI{12}{\%} overshoot.  Reducing the limit to $\pm 1~\si{A}$ adds roughly \SI{0.5}{\ms} to the rise time and clips the overshoot to \SI{11.6}{\%}.  When the limit is tightened to $\pm 0.5~\si{A}$, the effective loop gain is so low that the axis never exceeds \SI{0.707}{mm} and the rise time cannot be defined.  As seen in \Cref{fig:pcontroller_saturation}, saturation therefore lengthens both the rise and settling times and can reduce overshoot at the cost of increased steady-state error.
+
+\begin{table}[H]
+  \centering
+  \caption{Effect of the amplifier saturation limit on the step response ($\mu_k=0.3~\si{Nm}$).}
+  \label{tab:sat_metrics}
+  \begin{tabular}{cccc}
+    \toprule
+    Saturation [A] & Overshoot [\%] & $t_r$ [ms] & $x_\infty$ [mm]\\
+    \midrule
+    $\pm0.5$ & 0.0 & \textemdash & 0.707 \\
+    $\pm1.0$ & 11.6 & 27.1 & 1.114 \\
+    $\pm2.0$ & 12.3 & 26.6 & 1.120 \\
+    $\pm3.0$ & 12.3 & 26.6 & 1.120 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The saturation-dependent trajectories appear in \Cref{fig:pcontroller_saturation}; heavily clipped actuators suppress overshoot but prevent the axis from tracking even a nominal \SI{1}{mm} command.
+
+\subsection{Effect of Nonlinearities}
+With Coulomb friction, the overall shape of the response is still similar, but the magnitude of $X_a$ becomes significantly smaller at all times. As the system rises indefinitely (due to lack of integral action), overshoot, rise time, and settling time technically do not exist in the conventional sense for the high friction case.
+
+Setting a lower saturation limit (at $\pm 0.5$ A) lowers the magnitude by about one decrement, but it does not introduce overshoot, rise time, or settling time because the system is severely limited. See the plot in \Cref{fig:pcontroller_saturation}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.78\linewidth]{pcontroller_saturation_steps.png}
+  \caption{Step response of the discrete P loop for several actuator current limits ($\mu_k = 0.3~\si{Nm}$) based on simulation.}
+  \label{fig:pcontroller_saturation}
+\end{figure}
+
+\section{Prelab 5 -- Lead--Lag Compensator}
+\label{sec:q5}
+\begin{infobox}[Q5 Deliverables]
+  \begin{itemize}
+    \item Using the bode plot of the discrete system $G_{ol}(z)$, design the compensator to achieve 60 degrees phase margin at gain cross over frequency of $\omega_c = 60 \text{Hz} = 377 \text{rad/s}$.
+    \item Include basic expressions. Plot frequency response of open loop system including compensator showing design criteria met.
+    \item Cascade an integral action ($1 + K_i/s$) to the lead lag compensator with a gain $K_i = \omega_c/10$.
+    \item Simulate the step and ramp input response with friction disturbance again, and show the effect of integral action on steady state error. Compare results with/without integral controller.
+  \end{itemize}
+\end{infobox}
+
+\subsection{Lead Design at $\omega_c=377~\text{rad/s}$}
+The handout specifies a lead network of the form
+\begin{equation}
+  C_\text{LL}(s) = K \frac{\alpha \tau s + 1}{\tau s + 1},
+  \label{eq:lead_template}
+\end{equation}
+which augments both the magnitude and phase near the desired crossover.  The measured phase of $G_\text{ol}(s)$ at $\omega_c=377~\si{rad/s}$ is $-178.67^\circ$, so the uncompensated phase margin is only $1.33^\circ$.  Achieving the required $60^\circ$ margin therefore requires a maximum phase contribution of $\phi_{\max}=58.67^\circ$.  Applying the standard lead relations
+\[
+  \alpha = \frac{1+\sin\phi_{\max}}{1-\sin\phi_{\max}} = 12.717,
+  \qquad
+  \tau = \frac{1}{\omega_c \sqrt{\alpha}} = 7.44\times10^{-4}~\text{s},
+\]
+and solving for $K$ so that $\lvert C_\text{LL}(j\omega_c) G_\text{ol}(j\omega_c)\rvert = 1$ yields
+\begin{equation}
+  C_\text{LL}(s)
+  = 13.73\, \frac{0.1299\,s + 13.73}{0.0007438\,s + 1}.
+  \label{eq:lead_comp}
+\end{equation}
+The updated open-loop Bode plot in \Cref{fig:lrr_lead} shows that the loop now crosses $0~\si{dB}$ at \SI{377}{rad/s} with $\qty{60}{\degree}$ of phase margin, in agreement with the hand calculation.  For implementation in the discrete-time Simulink model, the controller was mapped to the $z$-domain with Tustin's method and the sample time $T=0.2~\text{ms}$ so that the explicit ZOH block in the plant is not duplicated:
+\begin{equation}
+  C_\text{LL}(z) = \frac{155.5 z - 152.3}{z - 0.763}.
+\end{equation}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\linewidth]{lrr_lead.png}
+  \caption{Loop return ratio after inserting the lead compensator. Margins shown in plot title.}
+  \label{fig:lrr_lead}
+\end{figure}
+
+\subsection{Integral Augmentation and Tracking}
+Part~(b) of the handout demands that an integral action be cascaded with the lead network to eliminate steady-state error under the friction disturbance.  The integral block,
+\begin{equation}
+  C_I(s) = \frac{s + K_i}{s}, \qquad K_i = \frac{\omega_c}{10} = 37.7~\si{rad/s},
+  \label{eq:integrator}
+\end{equation}
+introduces a pole at the origin and a zero at $-K_i$.  The combined controller becomes
+\begin{equation}
+  C_\text{LLI}(s) = C_\text{LL}(s) \, C_I(s)
+  = \frac{0.1299 s^2 + 18.62 s + 517.5}{0.0007438 s^2 + s},
+\end{equation}
+with discrete counterpart
+\begin{equation}
+  C_\text{LLI}(z) = \frac{156.1 z^2 - 307.8 z + 151.7}{z^2 - 1.763 z + 0.763}.
+\end{equation}
+Figure~\ref{fig:lead_integrator} overlays the step and ramp responses (both corrupted by the $\mu_k=0.3~\si{Nm}$ Coulomb disturbance) for the lead-only and lead-plus-integral controllers.  The constant disturbance is equivalent to an input voltage of $0.47~\si{V}$, so the P-type lead compensator alone leaves steady-state errors of \SI{0.034}{mm} for both step and ramp commands.  Introducing the integral pole collapses the step error to \SI{0.0001}{mm} and the ramp error below \(10^{-4}~\si{mm}\), albeit with roughly \SI{15}{\%} more settling time and a reduced gain margin (Table~\ref{tab:lead_margins}).  This trade-off is consistent with the Bode overlays in \Cref{fig:bode_summary}, where the integral block lifts the low-frequency magnitude by \SI{20}{dB/decade} and adds the expected $-90^\circ$ of phase.
+
+The qualitative behaviour in \Cref{fig:lead_integrator} matches the archived plots from Bobsy's report: the lead compensator produces a fast, well-damped step with a small static offset and a ramp with a constant error, while the added integral action introduces overshoot but eliminates steady-state errors for both inputs.  Because the simulated frequency-domain margins in Table~\ref{tab:lead_margins} remain within specification, no further tuning was required.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{lead_integral_tracking.png}
+  \caption{Reference tracking comparisons.}
+  \label{fig:lead_integrator}
+\end{figure}
+
+Adding the integral action as well as the lead lag compensator has drastically changed the behaviour of the system. See \Cref{fig:lead_integrator} for the step and ramp responses, with $\mu=0.3$ and saturation limit of $\pm 3$ A.
+The step response is no longer close to linear. It instead resembles a parabola.
+And the ramp response has an even higher rate of growth, resembling a higher-degree polynomial graph.
+
+Without the integral controller (and still with the lead-lag compensator), the responses look linear (for step) or quadratic (for ramp).
+These responses, especially the step response, confirm that the integral controller effectively makes the output behave almost like a polynomial one degree higher, allowing the system to change much more rapidly.
+
+\begin{table}[H]
+  \centering
+  \caption{Loop stability margins after compensation.}
+  \label{tab:lead_margins}
+  \begin{tabular}{lcc}
+    \toprule
+    Loop & Gain Margin & Phase Margin\\
+    \midrule
+    $C_\text{LL} G_\text{ol}$ & $>10^6$ & $60.0^\circ$ at $377~\si{rad/s}$\\
+    $C_\text{LLI} G_\text{ol}$ & $0.057$ (about $-25~\text{dB}$) & $54.3^\circ$ at $379~\si{rad/s}$\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table}[H]
+  \centering
+  \caption{Summary of controller implementations carried into Simulink.}
+  \label{tab:controller_summary}
+  \begin{tabular}{lll}
+    \toprule
+    Controller & Transfer Function & Key Parameters \\
+    \midrule
+    P only & $C_P(z) = K_p$ & $K_p = 1.253~\si{V/mm}$\\
+    Lead & $C_\text{LL}(z) = \dfrac{155.5 z - 152.3}{z - 0.763}$ & $\alpha=12.72$, $\tau=7.44\times10^{-4}~\si{s}$ \\
+    Lead + I & $C_\text{LLI}(z) = \dfrac{156.1 z^2 - 307.8 z + 151.7}{z^2 - 1.763 z + 0.763}$ & $K_i = 37.7~\si{rad/s}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Discussion of Prelab Concepts}
+\label{sec:q6}
+\Cref{fig:bode_summary} overlays the frequency responses of the plant, compensators, and compensated loops.  The updated plot unwraps the phase before plotting, which removes the artificial $+180^\circ$ jump that appeared in earlier drafts when the phase wrapped at the $\pm\pi$ boundary.  With the unwrap applied, the curves now match the MATLAB reference provided (compare the smooth evolution of the purple $G_\text{ol}C_\text{LLI}$ trace to Bobsy's Figure~29).  The behaviour can be interpreted as follows:
+\begin{itemize}
+  \item $C_\text{LL}$ injects a pair of real zeros that add up to roughly $+60^\circ$ of phase around $\omega_c$, so the product $G_\text{ol}C_\text{LL}$ rises through $0~\text{dB}$ while bending the phase upward toward $-120^\circ$ before rolling down again at higher frequencies.
+  \item Cascading the integrator contributes the expected $-90^\circ$ slope at low frequency while adding \SI{20}{dB/dec} of gain.  Because the integrator zero is placed at $-K_i=-37.7$~rad/s, the phase of $G_\text{ol}C_\text{LLI}$ peaks near $-90^\circ$ at low frequency, dips toward $-270^\circ$ around the plant pole, and then recovers as the lead zero/pole pair injects positive phase; this is why the purple curve never looks like a sharp discontinuity when the phase is unwrapped correctly.
+  \item The large DC gain of $G_\text{ol}C_\text{LLI}$ ensures zero steady-state error (per Q5) but also reduces gain margin (Table~\ref{tab:lead_margins}), so any implementation must respect current limits and include anti-windup protection.
+\end{itemize}
+More broadly:
+\begin{itemize}
+  \item Higher DC gain improves disturbance rejection and steady-state accuracy but can invite saturation and overshoot if left unchecked.
+  \item Raising the gain crossover frequency shortens the rise time because the loop can track higher bandwidth commands, yet it also consumes phase margin.
+  \item The Coulomb-friction plots in \Cref{fig:pcontroller_friction,fig:pcontroller_saturation} highlight that nonlinearities dominate overshoot and settling when actuator limits are tight, reinforcing the need for integral plus anti-windup logic in the full implementation.
+\end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\linewidth]{bode_summary.png}
+  \caption{Magnitude and phase of $G_\text{ol}(s)$, $C_\text{LL}(s)$, $C_\text{LLI}(s)$, and the combined open-loop transfer functions.}
+  \label{fig:bode_summary}
+\end{figure}
 
 \section{Analysis -- Plotting Experimental \& Simulated Results}
 The following plots show the experimental and Simulink results for each input and for each controller. The step response input was 1 mm, and the ramp input was 10 mm/s.
@@ -197,7 +772,5 @@ Discrepancies between simulation and experiment, particularly in the P-controlle
 \appendix
 \section{MATLAB/Python Scripts}
 (See attached files for generation scripts).
-
-\includepdf[pages=-, scale=0.9, pagecommand={}]{../prelab2.pdf}
 
 \end{document}
